@@ -1,32 +1,19 @@
+# models.py
 from django.db import models
+from django_google_maps import fields as map_fields
 
-class Locations(models.Model):
-    club = models.CharField(max_length=500, blank=True, null=True)
-    name = models.CharField(max_length=500)
-    zipcode = models.CharField(max_length=200, blank=True, null=True)
-    city = models.CharField(max_length=200,blank=True,null=True)
-    country = models.CharField(max_length=200,blank=True,null=True)
-    address = models.CharField(max_length = 200, blank=True,null=True)
-    created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)
-    edited_at = models.DateTimeField(auto_now=True)
 
-    lat = models.CharField(max_length=200, blank=True, null=True)
-    lng = models.CharField(max_length=200, blank=True, null=True)
-    place_id = models.CharField(max_length=200, blank=True, null=True)
+class Restaurant(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
+    geolocation = models.CharField(max_length=50)
+    cuisine_type = models.CharField(max_length=50)
+    rating = models.FloatField()
 
-    def __str__(self):
-        return self.name
-class Distances(models.Model):
-    from_location = models.ForeignKey(Locations, related_name = "from_location", on_delete=models.CASCADE)
-    to_location = models.ForeignKey(Locations, related_name = "to_location", on_delete=models.CASCADE)
-    mode = models.CharField(max_length=200, blank=True, null=True)
-    distance_km = models.DecimalField(ma_digits=10, decimal_places=2)
-    duration_mins = models.DecimalField(ma_digits=10, decimal_places=2)
-    duration_traffic_mins = models.DecimalField(ma_digits=10, decimal_places=2, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    edited_at = models.DateTimeField(auto_now=True)
+    @property
+    def distance(self):
+        return getattr(self, '_distance', None)
 
-    def __str__(self):
-        return self.id
-    #make migrations to data base 6:26 pt 3
-
+    @distance.setter
+    def distance(self, value):
+        self._distance = value

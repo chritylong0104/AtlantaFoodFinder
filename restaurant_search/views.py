@@ -1,125 +1,73 @@
-
-from django.utils.duration import duration_string
-from django.views.generic import ListView
-from django.views import View
-from django.shortcuts import render, redirect
-from .models import *
-import googlemaps
+from django.shortcuts import render
 from django.conf import settings
-from .forms import *
-from datetime import datetime
+import googlemaps
+from geopy.distance import geodesic
+from types import SimpleNamespace
 
-class HomeView(ListView):
-    template_name = "project_content/geocoding.html"
-    context_object_name = 'my_data'
-    model = Locations
-    success_url = "/"
 
-class DistanceView(View):
-    template_name = "project_content/distance.html"
+def restaurant_search(request):
+    context = {
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
+        'restaurants': [],
+        'search_query': '',
+        'cuisine_type': '',
+        'min_rating': 0,
+        'max_distance': ''
+    }
 
-    def get(self, request):
-        form = DistanceForm()
-        distances = Distances.objects.all()
-        context = {
-            'form': form,
-            'distances': distances
-        }
-        return render(request, self.template_name, context)
+    if request.method == 'POST':
+        search_query = request.POST.get('search_query', '')
+        cuisine_type = request.POST.get('cuisine_type', '')
+        min_rating = request.POST.get('min_rating', '')
+        max_distance = request.POST.get('max_distance', '')
+        user_lat = request.POST.get('user_lat', '')
+        user_lng = request.POST.get('user_lng', '')
 
-    def post(self, request):
-        form = DistanceForm(request.POST)
-        if form.is_valid():
-            from_location = form.cleaned_data['from_location']
-            from_location_info = Locations.objects.get(name=from_location)
-            from_address_string = (
-                f"{from_location_info.address}, {from_location_info.zipcode}, "
-                f"{from_location_info.city}, {from_location_info.country}"
-            )
+        try:
+            min_rating = float(min_rating) if min_rating else 0
+            max_distance = float(max_distance) if max_distance else float('inf')
+            user_lat = float(user_lat) if user_lat else 33.7490  # Default to Atlanta's latitude
+            user_lng = float(user_lng) if user_lng else -84.3880  # Default to Atlanta's longitude
+        except ValueError:
+            context['error'] = "Please enter valid numbers for rating and distance."
+            return render(request, 'restaurant_search/restaurant_search.html', context)
 
-            to_location = form.cleaned_data['to_location']
-            to_location_info = Locations.objects.get(name=to_location)
-            to_address_string = (
-                f"{to_location_info.address}, {to_location_info.zipcode}, "
-                f"{to_location_info.city}, {to_location_info.country}"
-            )
+        user_location = (user_lat, user_lng)
+        gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
 
-            mode = form.cleaned_data['mode']
-            now = datetime.now()
+        try:
+            places_result = gmaps.places(query=f'{search_query} {cuisine_type} restaurant in Atlanta')
 
-            gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
-            calculate = gmaps.distance_matrix(
-                from_address_string,
-                to_address_string,
-                mode=mode,
-                departure_time=now,
-            )
+            restaurants = []
+            for place in places_result.get('results', []):
+                restaurant_location = (place['geometry']['location']['lat'], place['geometry']['location']['lng'])
+                distance = geodesic(user_location, restaurant_location).km
+                rating = place.get('rating', 0)
 
-            # Extract distance and duration details
-            duration_seconds = calculate['rows'][0]['elements'][0]['duration']['value']
-            duration_minutes = duration_seconds / 60
-            distance_meters = calculate['rows'][0]['elements'][0]['distance']['value']
-            distance_kilometers = distance_meters / 1000
+                if rating >= min_rating and distance <= max_distance:
+                    restaurant = SimpleNamespace(
+                        name=place['name'],
+                        address=place['formatted_address'],
+                        geolocation={
+                            'lat': place['geometry']['location']['lat'],
+                            'lng': place['geometry']['location']['lng']
+                        },
+                        cuisine_type=cuisine_type,
+                        rating=rating,
+                        distance=round(distance, 2)
+                    )
+                    restaurants.append(restaurant)
 
-            if 'duration_in_traffic' in calculate['rows'][0]['elements'][0]:
-                duration_in_traffic_seconds = calculate['rows'][0]['elements'][0]['duration_in_traffic']['value']
-                duration_in_traffic_minutes = duration_in_traffic_seconds / 60
-            else:
-                duration_in_traffic_minutes = None
+            restaurants.sort(key=lambda x: (-x.rating, x.distance))
 
-            # Save the distance calculation in the database
-            obj = Distances(
-                from_location=from_location_info,
-                to_location=to_location_info,
-                mode=mode,
-                distance_km=distance_kilometers,
-                duration_minutes=duration_minutes,
-                duration_traffic_mins=duration_in_traffic_minutes
-            )
-            obj.save()
+            context.update({
+                'restaurants': restaurants,
+                'search_query': search_query,
+                'cuisine_type': cuisine_type,
+                'min_rating': min_rating,
+                'max_distance': max_distance
+            })
+        except Exception as e:
+            context['error'] = str(e)
 
-        else:
-            print(form.errors)
-
-        return redirect('my_distance_view')
-
-class GeocodingView(View):
-    template_name = "project_content/geocoding.html"
-
-    def get(self, request, pk):
-        location = Locations.objects.get(pk=pk)
-
-        if location.lng and location.lat and location.place_id is not None:
-            lat = location.lat
-            lng = location.lng
-            place_id = location.place_id
-            label = "from my database"
-
-        elif location.address and location.country and location.zipcode and location.city is not None:
-            address_string = (
-                f"{location.address}, {location.zipcode}, {location.city}, {location.country}"
-            )
-            gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
-            result = gmaps.geocode(address_string)[0]
-
-            lat = result.get('geometry', {}).get('location', {}).get('lat', None)
-            lng = result.get('geometry', {}).get('location', {}).get('lng', None)
-            place_id = result.get('place_id', {})
-            label = "from my API call"
-
-            location.lat = lat
-            location.lng = lng
-            location.place_id = place_id
-            location.save()
-
-        else:
-            lat = lng = place_id = label = ""
-
-        context = {
-            'location': location,
-            'lat': lat,
-            'lng': lng,
-            'place_id': place_id,
-            'label': label
-        }
-        return render(request, self.template_name, context)
+    return render(request, 'restaurant_search/restaurant_search.html', context)

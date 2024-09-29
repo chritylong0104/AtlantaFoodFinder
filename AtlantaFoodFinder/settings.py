@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user_authentication',
+    'django_google_maps',
+    'restaurant_search'
 ]
 
 MIDDLEWARE = [
@@ -106,6 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', 'AIzaSyBmoBFkcKcyzqlXwzGhgzD4JulAN2IMGSo')
 
 LANGUAGE_CODE = 'en-us'
 

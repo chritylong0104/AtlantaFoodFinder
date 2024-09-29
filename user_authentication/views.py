@@ -50,3 +50,4 @@ def logoutUser(request):
 @login_required(login_url= "login")
 def home(request):
     return render(request, 'home/home.html')
+

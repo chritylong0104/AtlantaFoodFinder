@@ -1,9 +1,6 @@
 from django.urls import path
-from .views import *
+from . import views
 
 urlpatterns = [
-    path("", HomeView.as_view(), name= "my_home_view"),
-    path('geocoding/<int:pk>', GeocodingView.as_view(), name='my_geocoding_view'),
-    path('distance', DistanceView.as_view(), name='my_distance_view')
-
+    path('restaurant-search/', views.restaurant_search, name='restaurant_search'),
 ]
