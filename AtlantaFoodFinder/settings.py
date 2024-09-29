@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_authentication',
     'django_google_maps',
-    'restaurant_search'
+    'restaurant_search',
+    'favorites'
 ]
 
 MIDDLEWARE = [
