@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'user_authentication',
     'django_google_maps',
     'restaurant_search',
-    'favorites'
+    'favorites',
+    'geolocation',
 ]
 
 MIDDLEWARE = [

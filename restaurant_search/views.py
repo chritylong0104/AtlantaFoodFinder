@@ -5,6 +5,13 @@ from geopy.distance import geodesic
 from types import SimpleNamespace
 
 
+from django.shortcuts import render
+from django.conf import settings
+import googlemaps
+from geopy.distance import geodesic
+from types import SimpleNamespace
+
+
 def restaurant_search(request):
     context = {
         'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
