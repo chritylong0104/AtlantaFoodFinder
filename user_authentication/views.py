@@ -6,8 +6,12 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .forms import CreateUserForm
 
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
+from django.contrib.auth.models import User
 def registerPage(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -51,3 +55,43 @@ def logoutUser(request):
 def home(request):
     return render(request, 'home/home.html')
 
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        # Handle password change
+        password_form = PasswordChangeForm(request.user, request.POST)
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+        else:
+            messages.error(request, 'Please correct the error below.')
+
+        # Handle username and email change
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        user = request.user
+        if username and username != user.username:
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'This username is already taken.')
+            else:
+                user.username = username
+                user.save()
+                messages.success(request, 'Your username was successfully updated!')
+        if email and email != user.email:
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'This email is already in use.')
+            else:
+                user.email = email
+                user.save()
+                messages.success(request, 'Your email was successfully updated!')
+
+        return redirect('profile')
+
+    else:
+        password_form = PasswordChangeForm(request.user)
+
+    return render(request, 'profile/profile.html', {
+        'password_form': password_form,
+    })
