@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="GET" action="{% url 'map_view' %}">
+    <input type="text" name="query" value="{{ query }}" placeholder="Search restaurants...">
+    <button type="submit">Search</button>
+</form>
+
+<div id="map" style="height: 400px; width: 100%;"></div>
+
+<script>
+function initMap() {
+    const map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 33.7490, lng: -84.3880 },  // Atlanta coordinates
+        zoom: 12,
+    });
+
+    const infoWindow = new google.maps.InfoWindow();
+
+    {% for restaurant in restaurants %}
+    (function() {
+        const marker = new google.maps.Marker({
+            position: { lat: {{ restaurant.latitude }}, lng: {{ restaurant.longitude }} },
+            map: map,
+            title: "{{ restaurant.name }}",
+        });
+
+        marker.addEventListener("click", function() {
+            const content = `
+                <h3>{{ restaurant.name }}</h3>
+                <p>Address: {{ restaurant.address }}</p>
+                <p>Cuisine: {{ restaurant.cuisine }}</p>
+            `;
+            infoWindow.setContent(content);
+            infoWindow.open(map, this);
+        });
+    })();
+    {% endfor %}
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
+{% endblock %}
