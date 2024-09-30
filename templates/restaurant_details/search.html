@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Search for Restaurants in Atlanta</h1>
+<form method="POST" action="{% url 'search_restaurants' %}">
+    {% csrf_token %}
+    <input type="text" name="query" placeholder="Enter restaurant name or cuisine type">
+    <button type="submit">Search</button>
+</form>
+{% endblock %}

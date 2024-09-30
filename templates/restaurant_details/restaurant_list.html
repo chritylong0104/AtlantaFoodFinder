@@ -1,0 +1,7 @@
+<!-- restaurant_details/templates/restaurant_details/restaurant_list.html -->
+<h1>Search Results</h1>
+<ul>
+{% for restaurant in restaurants %}
+    <li><a href="{% url 'restaurant_detail' restaurant.id %}">{{ restaurant.name }}</a></li>
+{% endfor %}
+</ul>

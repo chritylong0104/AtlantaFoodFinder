@@ -54,7 +54,8 @@ def restaurant_search(request):
                         },
                         cuisine_type=cuisine_type,
                         rating=rating,
-                        distance=round(distance, 2)
+                        distance=round(distance, 2),
+                        place_id = place['place_id']
                     )
                     restaurants.append(restaurant)
 
@@ -71,3 +72,35 @@ def restaurant_search(request):
             context['error'] = str(e)
 
     return render(request, 'restaurant_search/restaurant_search.html', context)
+
+
+def restaurant_detail(request, place_id):
+    gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+
+    try:
+        place_result = gmaps.place(place_id=place_id)
+        place_details = place_result['result']
+
+        restaurant = SimpleNamespace(
+            name=place_details['name'],
+            address=place_details['formatted_address'],
+            geolocation={
+                'lat': place_details['geometry']['location']['lat'],
+                'lng': place_details['geometry']['location']['lng']
+            },
+            phone_number=place_details.get('formatted_phone_number', 'N/A'),
+            website=place_details.get('website', 'N/A'),
+            rating=place_details.get('rating', 'N/A'),
+            reviews=place_details.get('reviews', [])
+        )
+
+        context = {
+            'restaurant': restaurant,
+            'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
+        }
+
+        return render(request, 'restaurant_search/restaurant_detail.html', context)
+
+    except Exception as e:
+        context = {'error': str(e)}
+        return render(request, 'restaurant_search/error.html', context)
