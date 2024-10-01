@@ -1,0 +1,100 @@
+.restaurant-details {
+    margin-top: 60px; /* To account for fixed top nav */
+    padding: 20px;
+}
+
+.hero-image {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-text {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-text h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.rating {
+    font-size: 1.2em;
+    color: #f39924;
+}
+
+.photo-gallery, .reviews, .location {
+    margin-top: 40px;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gallery img {
+    width: calc(33.333% - 10px);
+    height: 200px;
+    object-fit: cover;
+}
+
+.review-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.review-card h3 {
+    margin-bottom: 0.5rem;
+}
+
+.review-card .rating {
+    color: #ffc107;
+    margin-bottom: 0.5rem;
+}
+
+.review-card .review-date {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+.hours {
+    margin-top: 10px;
+}
+
+.hours h3 {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.hours ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.hours li {
+    font-size: 0.9em;
+    margin-bottom: 2px;
+}
+
+.add-review {
+    margin-top: 20px;
+}
+
+.map-container {
+    height: 400px;
+    margin-top: 20px;
+}
