@@ -18,7 +18,10 @@
         </div>
         <div class="nav-right">
             <div class="search-bar">
-                <input type="text" placeholder="Search for restaurants...">
+                <form action="{% url 'restaurant_search' %}" method="GET">
+                    <input type="text" name="search_query" placeholder="Search for restaurants...">
+                    <button type="submit">Search</button>
+                </form>
             </div>
             <div class="nav-icons">
                 <a href="#" class="map"><i class="fas fa-map-marker-alt"></i></a>
