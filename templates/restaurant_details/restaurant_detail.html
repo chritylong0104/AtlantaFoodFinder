@@ -1,0 +1,29 @@
+<!-- restaurant_details/templates/restaurant_details/restaurant_detail.html -->
+<h1>{{ restaurant.name }}</h1>
+<p>Address: {{ restaurant.address }}</p>
+<p>Contact: {{ place_details.formatted_phone_number }}</p>
+<p>Cuisine: {{ restaurant.cuisine_type }}</p>
+<p>Rating: {{ restaurant.rating }}</p>
+
+<h2>Reviews</h2>
+{% for review in place_details.reviews %}
+    <p>{{ review.text }}</p>
+    <p>Rating: {{ review.rating }}</p>
+{% endfor %}
+
+<div id="map" style="height: 400px; width: 100%;"></div>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
+<script>
+    function initMap() {
+        var restaurant = {lat: {{ restaurant.latitude }}, lng: {{ restaurant.longitude }}};
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: restaurant
+        });
+        var marker = new google.maps.Marker({
+            position: restaurant,
+            map: map
+        });
+    }
+    initMap();
+</script>

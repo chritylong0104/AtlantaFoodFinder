@@ -31,9 +31,11 @@
         {% for restaurant in search_results %}
         <div class="restaurant-card">
             <h3>{{ restaurant.name }}</h3>
-            {% if restaurant.photos %}
-                <img src="{{ restaurant.photos.0 }}" alt="{{ restaurant.name }}" style="max-width: 100%; height: auto;">
-            {% endif %}
+            <div class="restaurant-photos">
+                {% for photo_url in restaurant.photos %}
+                    <img src="{{ photo_url }}" alt="{{ restaurant.name }}" class="restaurant-photo">
+                {% endfor %}
+            </div>
             <p>Address: {{ restaurant.address }}</p>
             <p>Rating: {{ restaurant.rating }}</p>
             {% if restaurant.distance %}
@@ -51,9 +53,11 @@
     {% for restaurant in suggested_restaurants %}
     <div class="restaurant-card">
         <h3>{{ restaurant.name }}</h3>
-        {% if restaurant.photos %}
-            <img src="{{ restaurant.photos.0 }}" alt="{{ restaurant.name }}" style="max-width: 100%; height: auto;">
-        {% endif %}
+        <div class="restaurant-photos">
+            {% for photo_url in restaurant.photos %}
+                <img src="{{ photo_url }}" alt="{{ restaurant.name }}" class="restaurant-photo">
+            {% endfor %}
+        </div>
         <p>Address: {{ restaurant.address }}</p>
         <p>Rating: {{ restaurant.rating }}</p>
     </div>
@@ -89,4 +93,26 @@ function initMap() {
 <script async defer
     src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap">
 </script>
+
+<style>
+.restaurant-photos {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.restaurant-photo {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.restaurant-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+</style>
 {% endblock %}
