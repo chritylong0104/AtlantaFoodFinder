@@ -86,6 +86,9 @@ def restaurant_search(request):
 
 def restaurant_detail(request, place_id):
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+    place_details = gmaps.place(place_id=place_id)['result']
+    photo_reference = place_details.get('photos', [{}])[0].get('photo_reference', '')
+    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={settings.GOOGLE_MAPS_API_KEY}" if photo_reference else ''
 
     try:
         place_result = gmaps.place(place_id=place_id)
@@ -105,8 +108,17 @@ def restaurant_detail(request, place_id):
         )
 
         context = {
-            'restaurant': restaurant,
-            'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
+            'restaurant': {
+            'name': place_details['name'],
+            'address': place_details['formatted_address'],
+            'rating': place_details['rating'],
+            'latitude': place_details['geometry']['location']['lat'],
+            'longitude': place_details['geometry']['location']['lng'],
+            'image_url': photo_url,
+            'hours': place_details.get('opening_hours', {}).get('weekday_text', []),
+        },
+            'place_details': place_details,
+            'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
         }
 
         return render(request, 'restaurant_search/restaurant_detail.html', context)
