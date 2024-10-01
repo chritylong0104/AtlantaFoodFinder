@@ -20,7 +20,12 @@
     <h2>Search Results</h2>
     <ul>
     {% for restaurant in restaurants %}
-        <li>{{ restaurant.name }} - Rating: {{ restaurant.rating }}, Distance: {{ restaurant.distance }} km</li>
+        <li>
+            <h3><a href="{% url 'restaurant_detail' restaurant.place_id %}">{{ restaurant.name }}</a></h3>
+            <p>Address: {{ restaurant.address }}</p>
+            <p>Rating: {{ restaurant.rating }}</p>
+            <p>Distance: {{ restaurant.distance }} km</p>
+        </li>
     {% endfor %}
     </ul>
 {% endif %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ restaurant.name }}</h1>
+<p>Address: {{ restaurant.address }}</p>
+<p>Phone: {{ restaurant.phone_number }}</p>
+<p>Website: <a href="{{ restaurant.website }}">{{ restaurant.website }}</a></p>
+<p>Rating: {{ restaurant.rating }}</p>
+
+<h2>Reviews</h2>
+{% for review in restaurant.reviews %}
+    <div>
+        <p>Rating: {{ review.rating }}</p>
+        <p>{{ review.text }}</p>
+    </div>
+{% endfor %}
+
+<div id="map" style="height: 400px; width: 100%;"></div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}"></script>
+<script>
+    function initMap() {
+        var restaurant = {lat: {{ restaurant.geolocation.lat }}, lng: {{ restaurant.geolocation.lng }}};
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: restaurant
+        });
+        var marker = new google.maps.Marker({
+            position: restaurant,
+            map: map
+        });
+    }
+    initMap();
+</script>
+{% endblock %}
