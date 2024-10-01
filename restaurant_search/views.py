@@ -25,13 +25,13 @@ def restaurant_search(request):
         'max_distance': ''
     }
 
-    if request.method == 'POST':
-        search_query = request.POST.get('search_query', '')
-        cuisine_type = request.POST.get('cuisine_type', '')
-        min_rating = request.POST.get('min_rating', '')
-        max_distance = request.POST.get('max_distance', '')
-        user_lat = request.POST.get('user_lat', '')
-        user_lng = request.POST.get('user_lng', '')
+    if request.method in ['POST', 'GET']:
+        search_query = request.POST.get('search_query', '') or request.GET.get('search_query', '')
+        cuisine_type = request.POST.get('cuisine_type', '') or request.GET.get('cuisine_type', '')
+        min_rating = request.POST.get('min_rating', '') or request.GET.get('min_rating', '')
+        max_distance = request.POST.get('max_distance', '') or request.GET.get('max_distance', '')
+        user_lat = request.POST.get('user_lat', '') or request.GET.get('user_lat', '')
+        user_lng = request.POST.get('user_lng', '') or request.GET.get('user_lng', '')
 
         try:
             min_rating = float(min_rating) if min_rating else 0
