@@ -1,0 +1,66 @@
+.restaurant-details {
+    margin-top: 60px; /* To account for fixed top nav */
+    padding: 20px;
+}
+
+.hero-image {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-text {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-text h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.rating {
+    font-size: 1.2em;
+    color: #f39924;
+}
+
+.photo-gallery, .reviews, .location {
+    margin-top: 40px;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gallery img {
+    width: calc(33.333% - 10px);
+    height: 200px;
+    object-fit: cover;
+}
+
+.review-card {
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.add-review {
+    margin-top: 20px;
+}
+
+.map-container {
+    height: 400px;
+    margin-top: 20px;
+}
