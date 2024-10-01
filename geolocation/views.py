@@ -23,4 +23,4 @@ def map_view(request):
     return render(request, 'geolocation/map.html', context)
 
 def home_view(request):
-    return render(request, 'geolocation/home.html')
+    return render(request, 'home/home.html')
