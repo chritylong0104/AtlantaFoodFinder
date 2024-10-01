@@ -14,7 +14,6 @@
     <nav class="top-nav">
         <div class="logo">
             <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
-            <span>Welcome, {{ user.username }}</span>
         </div>
         <div class="nav-right">
             <div class="search-bar">
@@ -48,6 +47,7 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
+        <h1 class="welcome-message">Welcome, {{ user.username }}</h1>
         <div class="restaurant-cards">
             {% for i in '123456'|make_list %}
             <div class="card">
