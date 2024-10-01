@@ -1,4 +1,4 @@
-{% extends 'user_authentication/home.html' %}
+{% extends 'home.html' %}
 
 {% block content %}
 <h1>Restaurant Search</h1>
@@ -18,21 +18,16 @@
 
 {% if restaurants %}
     <h2>Search Results</h2>
-    <div class="restaurant-list">
+    <ul>
     {% for restaurant in restaurants %}
-        <div class="restaurant-card">
+        <li>
             <h3><a href="{% url 'restaurant_detail' restaurant.place_id %}">{{ restaurant.name }}</a></h3>
-            <div class="restaurant-photos">
-                {% for photo_url in restaurant.photos %}
-                    <img src="{{ photo_url }}" alt="{{ restaurant.name }}" class="restaurant-photo">
-                {% endfor %}
-            </div>
             <p>Address: {{ restaurant.address }}</p>
             <p>Rating: {{ restaurant.rating }}</p>
             <p>Distance: {{ restaurant.distance }} km</p>
-        </div>
+        </li>
     {% endfor %}
-    </div>
+    </ul>
 {% endif %}
 
 <script>
@@ -93,46 +88,4 @@ if (navigator.geolocation) {
 }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
-
-<style>
-.restaurant-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.restaurant-card {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    width: calc(33.333% - 20px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.restaurant-photos {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.restaurant-photo {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
-@media (max-width: 768px) {
-    .restaurant-card {
-        width: calc(50% - 20px);
-    }
-}
-
-@media (max-width: 480px) {
-    .restaurant-card {
-        width: 100%;
-    }
-}
-</style>
 {% endblock %}
