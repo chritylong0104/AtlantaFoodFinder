@@ -72,6 +72,25 @@ body {
 .nav-icons .btn {
     margin-left: 20px;
 }
+.custom-logout-btn {
+    background-color: #B5D185;
+    border-color: #B5D185;
+}
+
+.custom-logout-btn:hover {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.custom-apply-btn {
+    background-color: #B5D185;
+    border-color: #B5D185;
+}
+
+.custom-apply-btn:hover {
+    background-color: #45a049; /* Darker green on hover */
+    border-color: #45a049;
+}
 
 .welcome-section {
     background-size: cover;
@@ -141,7 +160,7 @@ body {
     margin-top: 20px; /* Add some top margin */
     margin-bottom: 65px;
     font-size: 75px;
-    color: #333;
+    color: white;
 }
 
 .restaurant-cards {
