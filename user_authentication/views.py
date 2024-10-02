@@ -102,3 +102,5 @@ def profile(request):
     return render(request, 'profile/profile.html', {
         'password_form': password_form,
     })
+def favorites(request):
+    return render(request, 'favorites.html')
