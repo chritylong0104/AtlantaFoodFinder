@@ -110,5 +110,34 @@
         }
         // Here you would typically send an AJAX request to update the favorite status in the backend
     }
+    $(document).ready(function() {
+    $('#favorite-btn').click(function() {
+        var placeId = $(this).data('place-id');
+        var name = $(this).data('name');
+        $.ajax({
+            url: "{% url 'toggle_favorite' %}",
+            method: 'POST',
+            data: {
+                'place_id': placeId,
+                'name': name,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                var btn = $('#favorite-btn');
+                var icon = btn.find('i');
+                if (response.status === 'added') {
+                    icon.removeClass('far').addClass('fas');
+                    btn.addClass('active');
+                } else if (response.status === 'removed') {
+                    icon.removeClass('fas').addClass('far');
+                    btn.removeClass('active');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error toggling favorite:", error);
+            }
+        });
+    });
+});
 </script>
 {% endblock %}

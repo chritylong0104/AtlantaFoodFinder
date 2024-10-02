@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>My Favorite Restaurants</h2>
+<div class="restaurant-cards">
+    {% for favorite in favorites %}
+    <div class="card">
+        <h4>{{ favorite.name }}</h4>
+        <p>Added on: {{ favorite.added_on }}</p>
+        <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}')">
+            <i class="fas fa-heart"></i>
+        </button>
+    </div>
+    {% empty %}
+    <p>You haven't added any favorites yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
