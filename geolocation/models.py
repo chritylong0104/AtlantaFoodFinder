@@ -5,7 +5,16 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=100)
     address = map_fields.AddressField(max_length=200)
     geolocation = map_fields.GeoLocationField(max_length=100)
-    # Add any other fields you need, such as ratings, cuisine type, etc.
+    cuisine = models.CharField(max_length=100, default='Unknown')
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.geolocation:
+            lat, lng = self.geolocation.split(',')
+            self.latitude = float(lat.strip())
+            self.longitude = float(lng.strip())
+        super().save(*args, **kwargs)
