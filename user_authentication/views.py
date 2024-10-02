@@ -12,10 +12,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Favorite
-
 def registerPage(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -102,24 +98,7 @@ def profile(request):
 
     else:
         password_form = PasswordChangeForm(request.user)
-    favorites = Favorite.objects.filter(user=request.user).order_by('-added_on')
 
     return render(request, 'profile/profile.html', {
         'password_form': password_form,
-        'favorites': favorites,
     })
-@login_required
-def toggle_favorite(request):
-    if request.method == 'POST':
-        place_id = request.POST.get('place_id')
-        name = request.POST.get('name')
-        favorite, created = Favorite.objects.get_or_create(
-            user=request.user,
-            place_id=place_id,
-            defaults={'name': name}
-        )
-        if not created:
-            favorite.delete()
-            return JsonResponse({'status': 'removed'})
-        return JsonResponse({'status': 'added'})
-    return JsonResponse({'status': 'error'}, status=400)

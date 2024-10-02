@@ -26,7 +26,7 @@ def home_view(request):
     context = {
         'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
     }
-    return render(request, 'geolocation/home.html', context)
+    return render(request, 'home/home.html', context)
 
 
 def restaurant_detail(request, place_id):

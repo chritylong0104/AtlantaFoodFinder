@@ -7,9 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('user_authentication.urls')),
     path('restaurant-search/', include('restaurant_search.urls')),
-    path('favorites/', include('favorites.urls')),
     path('geolocation/', include('geolocation.urls')),
     path('restaurant/<str:place_id>/', views.restaurant_detail, name='restaurant_detail'),
-    path('favorites/', include('favorites.urls')),
 
 ]
