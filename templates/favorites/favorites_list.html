@@ -6,7 +6,7 @@
     {% for favorite in favorites %}
     <div class="card">
         <h4>{{ favorite.name }}</h4>
-        <p>Added on: {{ favorite.added_on }}</p>
+        <p>Added on: {{ favorite.added_on|date:"F d, Y" }}</p>
         <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}')">
             <i class="fas fa-heart"></i>
         </button>
@@ -15,4 +15,69 @@
     <p>You haven't added any favorites yet.</p>
     {% endfor %}
 </div>
+
+<style>
+body {
+    padding-top: 60px; /* Adjust this value based on your navbar height */
+}
+
+h2 {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.restaurant-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+.card {
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.favorite-btn {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+}
+
+.favorite-btn i {
+    font-size: 1.5em;
+}
+</style>
+
+<script>
+function toggleFavorite(event, placeId, name) {
+    event.preventDefault();
+    const btn = event.currentTarget;
+    const card = btn.closest('.card');
+
+    $.ajax({
+        url: "{% url 'toggle_favorite' %}",
+        method: 'POST',
+        data: {
+            'place_id': placeId,
+            'name': name,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.status === 'removed') {
+                card.remove();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error toggling favorite:", error);
+        }
+    });
+}
+</script>
 {% endblock %}
