@@ -121,3 +121,7 @@ def toggle_favorite(request):
         favorite.delete()
         return JsonResponse({'status': 'removed'})
     return JsonResponse({'status': 'added'})
+@login_required
+def favorites(request):
+    user_favorites = Favorite.objects.filter(user=request.user).order_by('-added_on')
+    return render(request, 'user_authentication/favorites.html', {'favorites': user_favorites})
