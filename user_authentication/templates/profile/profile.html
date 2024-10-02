@@ -102,7 +102,17 @@
 {% endfor %}
 </ul>
 <a href="{% url 'favorite_restaurants' %}">See all favorites</a>
-
+<h3>Favorite Restaurants</h3>
+<ul>
+{% for favorite in favorites %}
+    <li>
+        {{ favorite.name }} ({{ favorite.place_id }})
+        <small>Added on: {{ favorite.added_on }}</small>
+    </li>
+{% empty %}
+    <li>No favorite restaurants added yet.</li>
+{% endfor %}
+</ul>
     <!-- Optional JavaScript -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk5O8f2QpntvPbNIy0Txuxr+czr+xpzt/dT1I7+N" crossorigin="anonymous"></script>

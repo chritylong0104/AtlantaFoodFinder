@@ -4,8 +4,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.http import HttpResponse
-from .forms import CreateUserForm
+from django.views.decorators.http import require_POST
 
+from .forms import CreateUserForm
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from favorites.models import Favorite
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
@@ -102,3 +106,17 @@ def profile(request):
     return render(request, 'profile/profile.html', {
         'password_form': password_form,
     })
+@login_required
+@require_POST
+def toggle_favorite(request):
+    place_id = request.POST.get('place_id')
+    name = request.POST.get('name')
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user,
+        place_id=place_id,
+        defaults={'name': name}
+    )
+    if not created:
+        favorite.delete()
+        return JsonResponse({'status': 'removed'})
+    return JsonResponse({'status': 'added'})

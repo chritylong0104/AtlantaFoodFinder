@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>My Favorites</h2>
-  {% if favorites %}
-    <ul>
-      {% for favorite in favorites %}
-        <li>
-          {{ favorite.restaurant.name }}
-          <a href="{% url 'remove_from_favorites' favorite.restaurant.id %}">Remove</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
+<h2>My Favorite Restaurants</h2>
+<div class="restaurant-cards">
+    {% for favorite in favorites %}
+    <div class="card">
+        <h4>{{ favorite.name }}</h4>
+        <p>Added on: {{ favorite.added_on }}</p>
+        <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}')">
+            <i class="fas fa-heart"></i>
+        </button>
+    </div>
+    {% empty %}
     <p>You haven't added any favorites yet.</p>
-  {% endif %}
+    {% endfor %}
+</div>
 {% endblock %}
