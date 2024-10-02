@@ -1,42 +1,186 @@
-{% extends 'restaurant_search/home.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Map</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        #pac-input {
+            background-color: #fff;
+            font-family: Roboto, Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            margin-left: 12px;
+            padding: 0 11px 0 13px;
+            text-overflow: ellipsis;
+            width: 300px;
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #pac-input:focus {
+            border-color: #4d90fe;
+        }
+        #map-loading {
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
+            </a>
+        </div>
+        <div class="nav-right">
+            <div class="nav-icons">
+                <a href="{% url 'map_view' %}" class="map"><i class="fas fa-map-marker-alt"></i></a>
+                <a href="#" class="favorites"><i class="fas fa-heart"></i></a>
+                <a href="{% url 'profile' %}" class="profile"><i class="fas fa-user"></i></a>
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+            </div>
+        </div>
+    </nav>
 
-{% block content %}
-<form method="GET" action="{% url 'map_view' %}">
-    <input type="text" name="query" value="{{ query }}" placeholder="Search restaurants...">
-    <button type="submit">Search</button>
-</form>
+    <div class="content-wrapper">
+        <div class="container mt-4">
+            <h1>Restaurant Map</h1>
+            <div class="search-container">
+                <input id="pac-input" class="controls" type="text" placeholder="Search for restaurants...">
+            </div>
+            <div id="map-loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading map...</span>
+                </div>
+            </div>
+            <div id="map" style="display: none;"></div>
+        </div>
+    </div>
 
-<div id="map" style="height: 400px; width: 100%;"></div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script>
+    let markers = [];
+    let openInfoWindow = null;
 
-<script>
-function initMap() {
-    const map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 33.7490, lng: -84.3880 },  // Atlanta coordinates
-        zoom: 12,
-    });
+    function initMap() {
+        console.log("initMap function called");
+        document.getElementById('map-loading').style.display = 'none';
+        document.getElementById('map').style.display = 'block';
 
-    const infoWindow = new google.maps.InfoWindow();
-
-    {% for restaurant in restaurants %}
-    (function() {
-        const marker = new google.maps.Marker({
-            position: { lat: {{ restaurant.latitude }}, lng: {{ restaurant.longitude }} },
-            map: map,
-            title: "{{ restaurant.name }}",
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: {lat: 33.7490, lng: -84.3880}  // Atlanta coordinates
         });
 
-        marker.addEventListener("click", function() {
-            const content = `
-                <h3>{{ restaurant.name }}</h3>
-                <p>Address: {{ restaurant.address }}</p>
-                <p>Cuisine: {{ restaurant.cuisine }}</p>
-            `;
-            infoWindow.setContent(content);
-            infoWindow.open(map, this);
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+            searchBox.setBounds(map.getBounds());
         });
-    })();
-    {% endfor %}
-}
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
-{% endblock %}
+
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+            var places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                return;
+            }
+
+            // Clear out the old markers.
+            markers.forEach(function(marker) {
+                marker.setMap(null);
+            });
+            markers = [];
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+                if (!place.geometry) {
+                    console.log("Returned place contains no geometry");
+                    return;
+                }
+
+                // Create a marker for each place.
+                var marker = new google.maps.Marker({
+                    map: map,
+                    title: place.name,
+                    position: place.geometry.location
+                });
+
+                markers.push(marker);
+
+                // Create an info window for each marker
+                var infowindow = new google.maps.InfoWindow({
+                    content: '<strong><a href="/restaurant/' + place.place_id + '/" class="restaurant-link">' + place.name + '</a></strong><br>' +
+                             (place.formatted_address || '')
+                });
+
+                // Add click event to open info window when marker is clicked
+                marker.addListener('click', function() {
+                    if (openInfoWindow) {
+                        openInfoWindow.close();
+                    }
+                    infowindow.open(map, marker);
+                    openInfoWindow = infowindow;
+                });
+
+                // Add click event listener for restaurant links in this info window
+                google.maps.event.addListener(infowindow, 'domready', function() {
+                    document.querySelector('.restaurant-link').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.location.href = this.href;
+                    });
+                });
+
+                if (place.geometry.viewport) {
+                    // Only geocodes have viewport.
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+            });
+            map.fitBounds(bounds);
+        });
+    }
+
+    function loadGoogleMaps() {
+        var script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap';
+        script.defer = true;
+        script.async = true;
+        script.onerror = function() {
+            console.error('Failed to load Google Maps API');
+            document.getElementById('map-loading').innerHTML = 'Failed to load Google Maps. Please try again later.';
+        };
+        document.body.appendChild(script);
+    }
+
+    loadGoogleMaps();
+    </script>
+</body>
+</html>

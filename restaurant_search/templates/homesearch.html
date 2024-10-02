@@ -4,73 +4,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Restaurant Search Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="top-nav">
-        <div class="logo">
-            <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
-        </div>
-        <div class="nav-right">
-            <div class="search-bar">
-                <form action="{% url 'restaurant_search' %}" method="GET">
-                    <input type="text" name="search_query" placeholder="Search for restaurants...">
-                    <button type="submit">Search</button>
-                </form>
-            </div>
-            <div class="nav-icons">
-                <a href="#" class="map"><i class="fas fa-map-marker-alt"></i></a>
-                <a href="#" class="favorites"><i class="fas fa-heart"></i></a>
-                <a href="{% url 'profile' %}" class="profile"><i class="fas fa-user"></i></a>
-                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img" height="30">
+            AtlFoodFinder
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'restaurant_search' %}">Search</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" action="{% url 'restaurant_search' %}" method="GET">
+                <input class="form-control mr-sm-2" type="search" name="search_query" placeholder="Search restaurants" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
         </div>
     </nav>
-<div class="content-wrapper">
-    <!-- Side Bar -->
-    <aside class="side-bar">
-        <h2>Restaurant Filters</h2>
-        <div class="filter-section">
-            <h3><strong>Distance</strong></h3>
-            <input type="number" placeholder="Enter distance">
-        </div>
-        <div class="filter-section">
-            <h3><strong>Cuisine</strong></h3>
-            <input type="text" placeholder="Enter cuisine type">
-        </div>
-        <div class="filter-section">
-            <h3><strong>Rating</strong></h3>
-            <input type="number" min="1" max="5" placeholder="Enter rating">
-        </div>
-    </aside>
 
-    <!-- Main Content Area -->
-        <main class="main-content">
-            <h1 class="welcome-message">Welcome, {{ user.username }}</h1>
-            <div class="restaurant-cards">
-                {% for restaurant in randomized_restaurants %}
-                <div class="card">
-                    {% if restaurant.photos %}
-                        <img src="{{ restaurant.photos.0 }}" alt="{{ restaurant.name }}">
-                    {% else %}
-                        <img src="{% static 'images/default_restaurant.jpg' %}" alt="{{ restaurant.name }}">
-                    {% endif %}
-                    <h4>{{ restaurant.name }}</h4>
-                    <p>{{ restaurant.address }}</p>
-                    {% if restaurant.rating %}
-                        <p>Rating: {{ restaurant.rating }}</p>
-                    {% endif %}
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Filters</span>
+                    </h6>
+                    <form action="{% url 'restaurant_search' %}" method="GET">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <div class="form-group px-3">
+                                    <label for="cuisine">Cuisine</label>
+                                    <input type="text" class="form-control" id="cuisine" name="cuisine" placeholder="Enter cuisine type">
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <div class="form-group px-3">
+                                    <label for="rating">Minimum Rating</label>
+                                    <input type="number" class="form-control" id="rating" name="min_rating" min="1" max="5" step="0.1" placeholder="Enter minimum rating">
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <div class="form-group px-3">
+                                    <label for="distance">Maximum Distance (km)</label>
+                                    <input type="number" class="form-control" id="distance" name="max_distance" min="0" step="0.1" placeholder="Enter maximum distance">
+                                </div>
+                            </li>
+                            <li class="nav-item px-3">
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </li>
+                        </ul>
+                    </form>
                 </div>
-                {% empty %}
-                <p>No restaurants found.</p>
-                {% endfor %}
-            </div>
-        </main>
+            </nav>
+
+            <!-- Main content -->
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Featured Restaurants</h1>
+                </div>
+
+                <div class="row">
+                  {% for restaurant in randomized_restaurants %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100">
+        {% if restaurant.photos %}
+            {% if restaurant.photos|length > 0 %}
+                {% if restaurant.photos.0|stringformat:"s"|slice:":4" == "http" %}
+                    <img src="{{ restaurant.photos.0 }}" class="card-img-top" alt="{{ restaurant.name }}">
+                {% elif restaurant.photos.0.photo_reference %}
+                    <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={{ restaurant.photos.0.photo_reference }}&key={{ GOOGLE_MAPS_API_KEY }}" class="card-img-top" alt="{{ restaurant.name }}">
+                {% else %}
+                    <img src="{% static 'images/default_restaurant.jpg' %}" class="card-img-top" alt="{{ restaurant.name }}">
+                {% endif %}
+            {% else %}
+                <img src="{% static 'images/default_restaurant.jpg' %}" class="card-img-top" alt="{{ restaurant.name }}">
+            {% endif %}
+        {% else %}
+            <img src="{% static 'images/default_restaurant.jpg' %}" class="card-img-top" alt="{{ restaurant.name }}">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ restaurant.name }}</h5>
+            <p class="card-text">{{ restaurant.address }}</p>
+            {% if restaurant.rating %}
+                <p class="card-text">Rating: {{ restaurant.rating }}</p>
+            {% endif %}
+            <a href="{% url 'restaurant_detail' restaurant.place_id %}" class="btn btn-primary">View Details</a>
+        </div>
     </div>
+</div>
+{% empty %}
+<div class="col-12">
+    <p>No restaurants found. Try adjusting your search criteria.</p>
+</div>
+{% endfor %}
+                </div>
+            </main>
+        </div>
+    </div>
+
     <!-- Bootstrap and jQuery Scripts -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0Nq5+8f2QpntvPbNIy0Txuxr+czr+xpzt/dT1I7+N" crossorigin="anonymous"></script>

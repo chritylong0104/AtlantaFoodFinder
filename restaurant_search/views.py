@@ -140,25 +140,6 @@ def home(request):
 
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
 
-    # Handle search
-    if request.method == 'POST':
-        search_query = request.POST.get('search_query', '')
-        if search_query:
-            search_results = gmaps.places(query=f'{search_query} restaurant in Atlanta')
-            for place in search_results.get('results', []):
-                photos = get_place_photos(gmaps, place['place_id'])
-                restaurant = SimpleNamespace(
-                    name=place['name'],
-                    address=place['formatted_address'],
-                    geolocation={
-                        'lat': place['geometry']['location']['lat'],
-                        'lng': place['geometry']['location']['lng']
-                    },
-                    rating=place.get('rating', 0),
-                    photos=photos
-                )
-                context['search_results'].append(restaurant)
-
     # Get random restaurants for suggestions
     places_result = gmaps.places(query='restaurant in Atlanta')
 
@@ -177,8 +158,11 @@ def home(request):
         )
         all_restaurants.append(restaurant)
 
-    # Randomly select up to 5 restaurants for suggestions
-    num_suggestions = min(5, len(all_restaurants))
-    context['suggested_restaurants'] = random.sample(all_restaurants, num_suggestions)
+    # Randomly select up to 6 restaurants for suggestions
+    num_suggestions = min(6, len(all_restaurants))
+    suggested_restaurants = random.sample(all_restaurants, num_suggestions)
 
-    return render(request, 'home.html', context)
+    for restaurant in suggested_restaurants:
+        print(f"Restaurant: {restaurant.name}")
+        print(f"Photos: {restaurant.photos}")
+        return render(request, 'restaurant_search/homesearch.html', {'randomized_restaurants': suggested_restaurants})
