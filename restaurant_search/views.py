@@ -55,6 +55,8 @@ def restaurant_search(request):
                 rating = place.get('rating', 0)
 
                 if rating >= min_rating and distance <= max_distance:
+                    photo_reference = place.get('photos', [{}])[0].get('photo_reference', '')
+                    image_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={settings.GOOGLE_MAPS_API_KEY}" if photo_reference else ''
                     restaurant = SimpleNamespace(
                         name=place['name'],
                         address=place['formatted_address'],
@@ -65,7 +67,8 @@ def restaurant_search(request):
                         cuisine_type=cuisine_type,
                         rating=rating,
                         distance=round(distance, 2),
-                        place_id = place['place_id']
+                        place_id = place['place_id'],
+                        image_url=image_url
                     )
                     restaurants.append(restaurant)
 
