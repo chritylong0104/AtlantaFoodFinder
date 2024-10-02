@@ -101,8 +101,8 @@
 
 .back-arrow {
     position: absolute;
-    top: 40px;
-    left: 30px;
+    top: 100px;
+    left: 50px;
     z-index: 10;
     color: white;
     font-size: 24px;
@@ -111,7 +111,7 @@
 
 .favorite-btn {
     position: absolute;
-    top: 40px;
+    top: 100px;
     right: 50px;
     z-index: 10;
     background: none;

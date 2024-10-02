@@ -5,7 +5,6 @@ from geopy.distance import geodesic
 from types import SimpleNamespace
 import random
 
-
 def get_place_photos(gmaps, place_id):
     place_details = gmaps.place(place_id=place_id, fields=['photo'])
     photos = []
@@ -15,7 +14,6 @@ def get_place_photos(gmaps, place_id):
             photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_reference}&key={settings.GOOGLE_MAPS_API_KEY}"
             photos.append(photo_url)
     return photos
-
 
 def restaurant_search(request):
     context = {
@@ -57,7 +55,8 @@ def restaurant_search(request):
                 rating = place.get('rating', 0)
 
                 if rating >= min_rating and distance <= max_distance:
-                    photos = get_place_photos(gmaps, place['place_id'])
+                    photo_reference = place.get('photos', [{}])[0].get('photo_reference', '')
+                    image_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={settings.GOOGLE_MAPS_API_KEY}" if photo_reference else ''
                     restaurant = SimpleNamespace(
                         name=place['name'],
                         address=place['formatted_address'],
@@ -68,8 +67,8 @@ def restaurant_search(request):
                         cuisine_type=cuisine_type,
                         rating=rating,
                         distance=round(distance, 2),
-                        place_id=place['place_id'],
-                        photos=photos
+                        place_id = place['place_id'],
+                        image_url=image_url
                     )
                     restaurants.append(restaurant)
 
@@ -90,27 +89,38 @@ def restaurant_search(request):
 
 def restaurant_detail(request, place_id):
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+    place_details = gmaps.place(place_id=place_id)['result']
+    photo_reference = place_details.get('photos', [{}])[0].get('photo_reference', '')
+    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={settings.GOOGLE_MAPS_API_KEY}" if photo_reference else ''
 
     try:
         place_result = gmaps.place(place_id=place_id)
         place_details = place_result['result']
-        photos = get_place_photos(gmaps, place_id)
 
-        restaurant = {
-            'name': place_details['name'],
-            'address': place_details['formatted_address'],
-            'rating': place_details.get('rating', 'N/A'),
-            'latitude': place_details['geometry']['location']['lat'],
-            'longitude': place_details['geometry']['location']['lng'],
-            'photos': photos,
-            'hours': place_details.get('opening_hours', {}).get('weekday_text', []),
-            'phone_number': place_details.get('formatted_phone_number', 'N/A'),
-            'website': place_details.get('website', 'N/A'),
-            'reviews': place_details.get('reviews', [])
-        }
+        restaurant = SimpleNamespace(
+            name=place_details['name'],
+            address=place_details['formatted_address'],
+            geolocation={
+                'lat': place_details['geometry']['location']['lat'],
+                'lng': place_details['geometry']['location']['lng']
+            },
+            phone_number=place_details.get('formatted_phone_number', 'N/A'),
+            website=place_details.get('website', 'N/A'),
+            rating=place_details.get('rating', 'N/A'),
+            reviews=place_details.get('reviews', [])
+        )
 
         context = {
-            'restaurant': restaurant,
+            'restaurant': {
+            'name': place_details['name'],
+            'address': place_details['formatted_address'],
+            'rating': place_details['rating'],
+            'latitude': place_details['geometry']['location']['lat'],
+            'longitude': place_details['geometry']['location']['lng'],
+            'image_url': photo_url,
+            'hours': place_details.get('opening_hours', {}).get('weekday_text', []),
+        },
+            'place_details': place_details,
             'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
         }
 
@@ -122,7 +132,32 @@ def restaurant_detail(request, place_id):
 
 
 def home(request):
+    context = {
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
+        'suggested_restaurants': [],
+        'search_results': []
+    }
+
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+
+    # Handle search
+    if request.method == 'POST':
+        search_query = request.POST.get('search_query', '')
+        if search_query:
+            search_results = gmaps.places(query=f'{search_query} restaurant in Atlanta')
+            for place in search_results.get('results', []):
+                photos = get_place_photos(gmaps, place['place_id'])
+                restaurant = SimpleNamespace(
+                    name=place['name'],
+                    address=place['formatted_address'],
+                    geolocation={
+                        'lat': place['geometry']['location']['lat'],
+                        'lng': place['geometry']['location']['lng']
+                    },
+                    rating=place.get('rating', 0),
+                    photos=photos
+                )
+                context['search_results'].append(restaurant)
 
     # Get random restaurants for suggestions
     places_result = gmaps.places(query='restaurant in Atlanta')
@@ -133,24 +168,17 @@ def home(request):
         restaurant = SimpleNamespace(
             name=place['name'],
             address=place['formatted_address'],
-            rating=place.get('rating', 0),
-            photos=photos,
-            place_id=place['place_id'],
             geolocation={
                 'lat': place['geometry']['location']['lat'],
                 'lng': place['geometry']['location']['lng']
-            }
+            },
+            rating=place.get('rating', 0),
+            photos=photos
         )
         all_restaurants.append(restaurant)
 
-    # Randomly select up to 6 restaurants for suggestions
-    num_suggestions = min(6, len(all_restaurants))
-    suggested_restaurants = random.sample(all_restaurants, num_suggestions)
-
-    context = {
-        'suggested_restaurants': suggested_restaurants,
-        'user': request.user,
-        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
-    }
+    # Randomly select up to 5 restaurants for suggestions
+    num_suggestions = min(5, len(all_restaurants))
+    context['suggested_restaurants'] = random.sample(all_restaurants, num_suggestions)
 
     return render(request, 'home.html', context)
