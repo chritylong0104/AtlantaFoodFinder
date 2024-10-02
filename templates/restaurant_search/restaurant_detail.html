@@ -12,9 +12,9 @@
     <a href="{% url 'map_view' %}" class="back-arrow">
         <i class="fas fa-arrow-left"></i>
     </a>
-    <button class="favorite-btn" onclick="toggleFavorite(this)">
-        <i class="far fa-heart"></i>
-    </button>
+    <button id="favorite-btn" class="favorite-btn" data-place-id="{{ place.place_id }}" data-name="{{ place.name }}">
+    <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
+</button>
     <div class="hero-image">
          {% if place.photos %}
             <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={{ place.photos.0.photo_reference }}&key={{ GOOGLE_MAPS_API_KEY }}" alt="{{ place.name }}">
@@ -85,6 +85,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
 <script>
     function initMap() {
@@ -98,46 +99,94 @@
             map: map
         });
     }
+function toggleFavorite(event) {
+    event.preventDefault();
+    const btn = event.currentTarget;
+    const placeId = btn.dataset.placeId;
+    const name = btn.dataset.name;
+    const icon = btn.querySelector('i');
 
-    function toggleFavorite(btn) {
-        const icon = btn.querySelector('i');
-        if (icon.classList.contains('far')) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-        } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-        }
-        // Here you would typically send an AJAX request to update the favorite status in the backend
-    }
-    $(document).ready(function() {
-    $('#favorite-btn').click(function() {
-        var placeId = $(this).data('place-id');
-        var name = $(this).data('name');
-        $.ajax({
-            url: "{% url 'toggle_favorite' %}",
-            method: 'POST',
-            data: {
-                'place_id': placeId,
-                'name': name,
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
-            },
-            success: function(response) {
-                var btn = $('#favorite-btn');
-                var icon = btn.find('i');
-                if (response.status === 'added') {
-                    icon.removeClass('far').addClass('fas');
-                    btn.addClass('active');
-                } else if (response.status === 'removed') {
-                    icon.removeClass('fas').addClass('far');
-                    btn.removeClass('active');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error toggling favorite:", error);
+    $.ajax({
+        url: "{% url 'toggle_favorite' %}",
+        method: 'POST',
+        data: {
+            'place_id': placeId,
+            'name': name,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.status === 'added') {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else if (response.status === 'removed') {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error toggling favorite:", error);
+        }
     });
-});
+}
+function callback(results, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+        const cardContainer = document.getElementById('restaurant-cards');
+        cardContainer.innerHTML = ''; // Clear existing cards
+
+        const shuffled = results.sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 6);
+
+        selected.forEach(place => {
+            const card = createRestaurantCard(place);
+            cardContainer.appendChild(card);
+        });
+
+        // Add event listeners to all favorite buttons
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            btn.addEventListener('click', toggleFavorite);
+        });
+    } else {
+        console.error('Google Places API request failed. Status:', status);
+        document.getElementById('restaurant-cards').innerHTML = '<p>Failed to load restaurants. Please try again later.</p>';
+    }
+}
+document.getElementById('favorite-btn').addEventListener('click', toggleFavorite);
+    document.addEventListener('DOMContentLoaded', function() {
+        function toggleFavorite(event) {
+            event.preventDefault();
+            const btn = event.currentTarget;
+            const placeId = btn.dataset.placeId;
+            const name = btn.dataset.name;
+            const icon = btn.querySelector('i');
+
+            $.ajax({
+                url: "{% url 'toggle_favorite' %}",
+                method: 'POST',
+                data: {
+                    'place_id': placeId,
+                    'name': name,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.status === 'added') {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    } else if (response.status === 'removed') {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error toggling favorite:", error);
+                }
+            });
+        }
+
+        // Add event listener to the favorite button
+        const favoriteBtn = document.getElementById('favorite-btn');
+        if (favoriteBtn) {
+            favoriteBtn.addEventListener('click', toggleFavorite);
+        }
+    });
 </script>
 {% endblock %}

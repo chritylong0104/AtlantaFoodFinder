@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+{% csrf_token %}
     <!-- Top Navigation Bar -->
     <nav class="top-nav">
        <div class="logo">
@@ -26,7 +27,7 @@
             </div>
             <div class="nav-icons">
                 <a href="{% url 'map_view' %}" class="map"><i class="fas fa-map-marker-alt"></i></a>
-                <a href="{% url 'favorites' %}" class="favorites"><i class="fas fa-heart"></i></a>
+                <a href="{% url 'favorites_list' %}" class="favorites"><i class="fas fa-heart"></i></a>
                 <a href="{% url 'profile' %}" class="profile"><i class="fas fa-user"></i></a>
                 <a href="{% url 'logout' %}" class="btn btn-primary custom-logout-btn">Logout</a>
             </div>
@@ -185,7 +186,7 @@ function toggleFavorite(event, placeId, name) {
         data: {
             'place_id': placeId,
             'name': name,
-            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(response) {
             const icon = event.target.closest('.favorite-btn').querySelector('i');
@@ -202,7 +203,12 @@ function toggleFavorite(event, placeId, name) {
         }
     });
 }
-
+const favoriteBtn = document.createElement('button');
+favoriteBtn.className = 'favorite-btn';
+favoriteBtn.innerHTML = '<i class="far fa-heart"></i>';
+favoriteBtn.onclick = function(event) {
+    toggleFavorite(event, place.place_id, place.name);
+};
 window.onload = initMap;
 </script>
 </body>
