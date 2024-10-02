@@ -102,3 +102,9 @@ def profile(request):
     return render(request, 'profile/profile.html', {
         'password_form': password_form,
     })
+
+from django.shortcuts import render
+
+def favorites(request):
+    # Add logic here to fetch and display favorite restaurants
+    return render(request, 'favorites/favorites_list.html')
