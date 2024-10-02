@@ -102,3 +102,7 @@ def profile(request):
     return render(request, 'profile/profile.html', {
         'password_form': password_form,
     })
+def restaurant_detail(request, place_id):
+    # Fetch restaurant details using the place_id
+    # Render the details template
+    return render(request, 'restaurant_search/restaurant_detail.html', {'place_id': place_id})

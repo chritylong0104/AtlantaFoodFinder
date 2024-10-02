@@ -130,6 +130,7 @@ function callback(results, status) {
         selected.forEach(place => {
             const card = document.createElement('div');
             card.className = 'card';
+            card.style.cursor = 'pointer'; // Change cursor to pointer on hover
 
             const img = document.createElement('img');
             img.src = place.photos && place.photos.length > 0 ? place.photos[0].getUrl() : "{% static 'images/default-restaurant.jpg' %}";
@@ -148,6 +149,12 @@ function callback(results, status) {
             card.appendChild(name);
             card.appendChild(rating);
             card.appendChild(address);
+
+            // Add click event listener to the card
+            card.addEventListener('click', function() {
+                // Redirect to the restaurant details page using the named URL
+                window.location.href = "{% url 'restaurant_detail' 0 %}".replace('0', place.place_id);
+            });
 
             cardContainer.appendChild(card);
         });

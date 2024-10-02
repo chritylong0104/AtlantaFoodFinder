@@ -1,29 +1,140 @@
-<!-- restaurant_details/templates/restaurant_details/restaurant_detail.html -->
-<h1>{{ restaurant.name }}</h1>
-<p>Address: {{ restaurant.address }}</p>
-<p>Contact: {{ place_details.formatted_phone_number }}</p>
-<p>Cuisine: {{ restaurant.cuisine_type }}</p>
-<p>Rating: {{ restaurant.rating }}</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ restaurant.name }} - Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/restaurant_details.css' %}">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
+            </a>
+        </div>
+        <div class="nav-right">
+            <div class="search-bar">
+                <form action="{% url 'restaurant_search' %}" method="GET">
+                    <input type="text" name="search_query" placeholder="Search for restaurants...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="nav-icons">
+                <a href="#" class="map"><i class="fas fa-map-marker-alt"></i></a>
+                <a href="#" class="favorites"><i class="fas fa-heart"></i></a>
+                <a href="{% url 'profile' %}" class="profile"><i class="fas fa-user"></i></a>
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+            </div>
+        </div>
+    </nav>
 
-<h2>Reviews</h2>
-{% for review in place_details.reviews %}
-    <p>{{ review.text }}</p>
-    <p>Rating: {{ review.rating }}</p>
-{% endfor %}
+    <main class="restaurant-details">
+        <a href="{% url 'restaurant_search' %}" class="back-arrow">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <button class="favorite-btn" onclick="toggleFavorite(this)">
+            <i class="far fa-heart"></i>
+        </button>
+        <div class="hero-image">
+             {% if restaurant.image_url %}
+                <img src="{{ restaurant.image_url }}" alt="{{ restaurant.name }}">
+             {% else %}
+                <img src="{% static 'images/default_restaurant.jpg' %}" alt="{{ restaurant.name }}">
+             {% endif %}
+            <div class="hero-text">
+                <h1>{{ restaurant.name }}</h1>
+                <div class="rating">
+                    {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= restaurant.rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="hours">
+                    <h3>Opening Hours</h3>
+                    <ul>
+                    {% for day_hours in restaurant.hours %}
+                         <li>{{ day_hours|safe }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-<div id="map" style="height: 400px; width: 100%;"></div>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
-<script>
-    function initMap() {
-        var restaurant = {lat: {{ restaurant.latitude }}, lng: {{ restaurant.longitude }}};
-        var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 15,
-            center: restaurant
-        });
-        var marker = new google.maps.Marker({
-            position: restaurant,
-            map: map
-        });
-    }
-    initMap();
-</script>
+        <section class="restaurant-info">
+            <h2>Restaurant Information</h2>
+            <p><strong>Address:</strong> {{ restaurant.address }}</p>
+            <p><strong>Phone:</strong> {{ place_details.formatted_phone_number }}</p>
+            <p><strong>Rating:</strong> {{ restaurant.rating }}</p>
+        </section>
+
+        <section class="reviews">
+            <h2>Reviews</h2>
+            {% for review in place_details.reviews %}
+                <div class="review-card">
+                    <h3>{{ review.author_name }}</h3>
+                    <div class="rating">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p>{{ review.text }}</p>
+                    <p class="review-date">{{ review.relative_time_description }}</p>
+                </div>
+            {% endfor %}
+            <button class="btn btn-primary add-review">Post Review</button>
+        </section>
+
+        <section class="location">
+            <h2>Location</h2>
+            <div class="map-container" id="map">
+                <!-- Google Maps will be inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Bootstrap and jQuery Scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ settings.GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            var restaurant = {lat: {{ restaurant.latitude }}, lng: {{ restaurant.longitude }}};
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: restaurant
+            });
+            var marker = new google.maps.Marker({
+                position: restaurant,
+                map: map
+            });
+        }
+    </script>
+    <script>
+        function toggleFavorite(btn) {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+    // Here you would typically send an AJAX request to update the favorite status in the backend
+        }
+    </script>
+</body>
+</html>
