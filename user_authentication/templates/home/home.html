@@ -56,14 +56,8 @@
     <!-- Main Content Area -->
     <main class="main-content">
         <h1 class="welcome-message">Welcome, {{ user.username }}</h1>
-        <div class="restaurant-cards">
-            {% for i in '123456'|make_list %}
-            <div class="card">
-                <img src="{% static 'images/restaurant' %}{{ i }}.jpg" alt="Restaurant {{ i }}">
-                <h4>Restaurant {{ i }}</h4>
-                <p>Description of Restaurant {{ i }}.</p>
-            </div>
-            {% endfor %}
+        <div id="restaurant-cards" class="restaurant-cards">
+            <!-- Cards will be dynamically inserted here -->
         </div>
     </main>
 </div>
@@ -92,6 +86,78 @@ $(document).ready(function() {
         this.submit();
     });
 });
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmoBFkcKcyzqlXwzGhgzD4JulAN2IMGSo&libraries=places"></script>
+<script>
+function initMap() {
+    // Get user's location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            fetchNearbyRestaurants(userLat, userLng);
+        }, function(error) {
+            console.error("Error getting user location:", error);
+            // Use a default location (e.g., city center) if geolocation fails
+            fetchNearbyRestaurants(0, 0);
+        });
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+        // Use a default location if geolocation is not supported
+        fetchNearbyRestaurants(0, 0);
+    }
+}
+
+function fetchNearbyRestaurants(lat, lng) {
+    const service = new google.maps.places.PlacesService(document.createElement('div'));
+    const request = {
+        location: new google.maps.LatLng(lat, lng),
+        radius: '5000',
+        type: ['restaurant']
+    };
+
+    service.nearbySearch(request, callback);
+}
+
+function callback(results, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+        const cardContainer = document.getElementById('restaurant-cards');
+        cardContainer.innerHTML = ''; // Clear existing cards
+
+        const shuffled = results.sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 6);
+
+        selected.forEach(place => {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const img = document.createElement('img');
+            img.src = place.photos && place.photos.length > 0 ? place.photos[0].getUrl() : "{% static 'images/default-restaurant.jpg' %}";
+            img.alt = place.name;
+
+            const name = document.createElement('h4');
+            name.textContent = place.name;
+
+            const rating = document.createElement('p');
+            rating.textContent = `Rating: ${place.rating || 'N/A'} (${place.user_ratings_total || 0} reviews)`;
+
+            const address = document.createElement('p');
+            address.textContent = place.vicinity || 'Address not available';
+
+            card.appendChild(img);
+            card.appendChild(name);
+            card.appendChild(rating);
+            card.appendChild(address);
+
+            cardContainer.appendChild(card);
+        });
+    } else {
+        console.error('Google Places API request failed. Status:', status);
+        document.getElementById('restaurant-cards').innerHTML = '<p>Failed to load restaurants. Please try again later.</p>';
+    }
+}
+
+window.onload = initMap;
 </script>
 </body>
 </html>

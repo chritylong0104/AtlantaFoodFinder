@@ -53,7 +53,14 @@ def logoutUser(request):
 
 @login_required(login_url= "login")
 def home(request):
-    return render(request, 'home/home.html')
+    user_lat = request.GET.get('user_lat', '0')  # Default to 0 if not provided
+    user_lng = request.GET.get('user_lng', '0')  # Default to 0 if not provided
+    context = {
+        'user': request.user,
+        'user_lat': user_lat,
+        'user_lng': user_lng,
+    }
+    return render(request, 'home/home.html', context)
 
 
 @login_required

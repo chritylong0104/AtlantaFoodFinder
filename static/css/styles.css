@@ -132,26 +132,17 @@ body {
 }
 
 .card {
-    background-color: orange;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    width: 300px;
+    margin: 10px;
     padding: 10px;
-    width: calc(33.333% - 20px);
-    margin-bottom: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .card img {
     width: 100%;
-    border-radius: 10px;
     height: 200px;
     object-fit: cover;
-}
-
-.card h4 {
-    margin: 10px 0;
 }
 
 .card:hover {
