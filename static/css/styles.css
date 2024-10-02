@@ -92,6 +92,16 @@ body {
     border-color: #45a049;
 }
 
+.btn-search {
+    background-color: #F58462; /* Change this to your desired color */
+    color: white; /* Text color */
+    border: none; /* Remove border if needed */
+}
+
+.btn-search:hover {
+    background-color: #f16b47; /* Darker shade for hover effect */
+}
+
 .welcome-section {
     background-size: cover;
     background-position: center;
