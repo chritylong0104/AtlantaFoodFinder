@@ -53,9 +53,9 @@
         <div class="nav-right">
             <div class="nav-icons">
                 <a href="{% url 'map_view' %}" class="map"><i class="fas fa-map-marker-alt"></i></a>
-                <a href="#" class="favorites"><i class="fas fa-heart"></i></a>
+                <a href="{% url 'favorites' %}" class="favorites"><i class="fas fa-heart"></i></a>
                 <a href="{% url 'profile' %}" class="profile"><i class="fas fa-user"></i></a>
-                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-primary custom-logout-btn">Logout</a>
             </div>
         </div>
     </nav>
