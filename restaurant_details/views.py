@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 import googlemaps
 from django.http import Http404
-from favorites.models import Favorite
 
 
 def home_view(request):
@@ -61,7 +60,7 @@ def restaurant_detail(request, place_id):
             'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
         }
 
-        return render(request, 'restaurant_details/restaurant_detail.html', context)
+        return render(request, 'restaurant_detail.html', {'place_id': place_id})
 
     except Exception as e:
         raise Http404(f"Restaurant with place_id {place_id} not found")
