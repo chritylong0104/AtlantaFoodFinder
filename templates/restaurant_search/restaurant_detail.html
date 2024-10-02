@@ -99,35 +99,46 @@
             map: map
         });
     }
-function toggleFavorite(event) {
-    event.preventDefault();
-    const btn = event.currentTarget;
-    const placeId = btn.dataset.placeId;
-    const name = btn.dataset.name;
-    const icon = btn.querySelector('i');
 
-    $.ajax({
-        url: "{% url 'toggle_favorite' %}",
-        method: 'POST',
-        data: {
-            'place_id': placeId,
-            'name': name,
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-        },
-        success: function(response) {
-            if (response.status === 'added') {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-            } else if (response.status === 'removed') {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error toggling favorite:", error);
+    document.addEventListener('DOMContentLoaded', function() {
+        function toggleFavorite(event) {
+            event.preventDefault();
+            const btn = event.currentTarget;
+            const placeId = btn.dataset.placeId;
+            const name = btn.dataset.name;
+            const icon = btn.querySelector('i');
+
+            $.ajax({
+                url: "{% url 'toggle_favorite' %}",
+                method: 'POST',
+                data: {
+                    'place_id': placeId,
+                    'name': name,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.status === 'added') {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    } else if (response.status === 'removed') {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error toggling favorite:", error);
+                }
+            });
+        }
+
+        // Add event listener to the favorite button
+        const favoriteBtn = document.getElementById('favorite-btn');
+        if (favoriteBtn) {
+            favoriteBtn.addEventListener('click', toggleFavorite);
         }
     });
-}
+</script>
+{% endblock %}
 function callback(results, status) {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
         const cardContainer = document.getElementById('restaurant-cards');
@@ -189,4 +200,3 @@ document.getElementById('favorite-btn').addEventListener('click', toggleFavorite
         }
     });
 </script>
-{% endblock %}

@@ -7,7 +7,7 @@
     <div class="card" id="favorite-{{ favorite.id }}">
         <h4>{{ favorite.name }}</h4>
         <p>Added on: {{ favorite.added_on }}</p>
-        <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}', {{ favorite.id }})">
+        <button class="favorite-btn" data-place-id="{{ favorite.place_id }}" data-name="{{ favorite.name }}">
             <i class="fas fa-heart"></i>
         </button>
     </div>
@@ -17,29 +17,36 @@
 </div>
 
 <script>
-function toggleFavorite(event, placeId, name, favoriteId) {
-    event.preventDefault();
-    const btn = event.currentTarget;
-    const icon = btn.querySelector('i');
+document.addEventListener('DOMContentLoaded', function() {
+    function toggleFavorite(event) {
+        event.preventDefault();
+        const btn = event.currentTarget;
+        const placeId = btn.dataset.placeId;
+        const name = btn.dataset.name;
+        const icon = btn.querySelector('i');
 
-    $.ajax({
-        url: "{% url 'toggle_favorite' %}",
-        method: 'POST',
-        data: {
-            'place_id': placeId,
-            'name': name,
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-        },
-        success: function(response) {
-            if (response.status === 'removed') {
-                // Remove the card from the page
-                $(`#favorite-${favoriteId}`).remove();
+        $.ajax({
+            url: "{% url 'toggle_favorite' %}",
+            method: 'POST',
+            data: {
+                'place_id': placeId,
+                'name': name,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'removed') {
+                    btn.closest('.card').remove();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error toggling favorite:", error);
             }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error toggling favorite:", error);
-        }
+        });
+    }
+
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', toggleFavorite);
     });
-}
+});
 </script>
 {% endblock %}
