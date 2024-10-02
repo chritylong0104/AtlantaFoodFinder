@@ -1,18 +1,24 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from .models import Favorite
-from restaurant_search.models import Restaurant  # Adjust import as needed
+from .models import Restaurant, Favorite
 
+
+@require_POST
 @login_required
-def add_to_favorites(request, restaurant_id):
+def toggle_favorite(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
-    Favorite.objects.get_or_create(user=request.user, restaurant=restaurant)
-    return redirect('restaurant_detail', restaurant_id=restaurant_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, restaurant=restaurant)
 
-@login_required
-def remove_from_favorites(request, restaurant_id):
-    Favorite.objects.filter(user=request.user, restaurant_id=restaurant_id).delete()
-    return redirect('favorites_list')
+    if not created:
+        favorite.delete()
+        is_favorite = False
+    else:
+        is_favorite = True
+
+    return JsonResponse({'is_favorite': is_favorite})
+
 
 @login_required
 def favorites_list(request):

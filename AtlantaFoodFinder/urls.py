@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('user_authentication.urls')),  # Assuming this is your user auth app
     path('restaurant-search/', include('restaurant_search.urls')),  # Add this line
-    path('favorites/', include('favorites.urls')), #favorites user story
+    path('favorites/', include('favorites.urls', namespace='favorites')), #favorites user story
     path('geolocation/', include('geolocation.urls')),
 
 ]

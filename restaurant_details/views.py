@@ -61,6 +61,7 @@ def restaurant_detail(request, place_id):
         place_details = place_result['result']
 
         restaurant = SimpleNamespace(
+            id=place_id,  # Use place_id as the restaurant id
             name=place_details['name'],
             address=place_details['formatted_address'],
             geolocation={
@@ -73,9 +74,14 @@ def restaurant_detail(request, place_id):
             reviews=place_details.get('reviews', [])
         )
 
+        is_favorite = False
+        if request.user.is_authenticated:
+            is_favorite = Favorite.objects.filter(user=request.user, restaurant_id=place_id).exists()
+
         context = {
             'restaurant': restaurant,
-            'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
+            'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
+            'is_favorite': is_favorite
         }
 
         return render(request, 'restaurant_search/restaurant_detail.html', context)
