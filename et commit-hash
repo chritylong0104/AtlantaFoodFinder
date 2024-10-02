@@ -1,0 +1,201 @@
+[33mcommit fb07cf96d6cfa904b5a2ce673c0d38644b2d3b85[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mchirsty[m[33m)[m
+Merge: 30b99bf 13f2b7e
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Tue Oct 1 15:13:11 2024 -0400
+
+    linked photos
+
+[33mcommit 13f2b7e8ac03f152ce54e6961e2fd48bd2ef4675[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Tue Oct 1 02:57:33 2024 -0400
+
+    restaurant details page
+
+[33mcommit f1b69486f02c1ba6239aec725f877717b07ba880[m
+Merge: a0b2f1c 9d395af
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Tue Oct 1 01:12:37 2024 -0400
+
+    restaurant search images
+
+[33mcommit a0b2f1c19ea5e06ef4f0d4c11b589915421df557[m
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Tue Oct 1 01:11:36 2024 -0400
+
+    restaurant details page
+
+[33mcommit 9d395af3d9b9c101816564246fea3d41ace6cef2[m[33m ([m[1;32mmain[m[33m)[m
+Merge: 6ed1782 93fa535
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Tue Oct 1 01:08:37 2024 -0400
+
+    added photos
+
+[33mcommit 30b99bf5a436bff3f975e576294d35f61e9c7eb6[m
+Merge: de52009 93fa535
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Tue Oct 1 00:53:02 2024 -0400
+
+    change photos
+
+[33mcommit 93fa5358a596aba0957e49141e05d16f001f1bcd[m
+Merge: 52dd38b a8ab233
+Author: akanezilla <sheim6@gatech.edu>
+Date:   Tue Oct 1 00:50:20 2024 -0400
+
+    Merge branch 'akané'
+
+[33mcommit a8ab233392b8dbb767a3e3ae48e1bed3c0ed1d0b[m[33m ([m[1;31morigin/akané[m[33m)[m
+Author: akanezilla <sheim6@gatech.edu>
+Date:   Tue Oct 1 00:48:17 2024 -0400
+
+    removed "map" button, linked everything together!
+    
+    the restaurant search button Is the maps button, was just an HTML button with no function. some links were wrong in geolocation and restaurant search so i changed those + also made the login page the first page (changed in project's urls)
+
+[33mcommit 6ed1782f4552ef5c5e782c46fb13fcbfe94796a5[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Tue Oct 1 00:45:40 2024 -0400
+
+    added photos
+
+[33mcommit de52009fdf96be545c4eaec42b85a8daf647b8f6[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Tue Oct 1 00:42:57 2024 -0400
+
+    randomized restaurants + added photos for specific searched restaurants
+
+[33mcommit 52dd38ba10467fa93458f7d8ad0dd62c5c7879a3[m
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Mon Sep 30 23:50:14 2024 -0400
+
+    home page changes
+
+[33mcommit 67cb52849487d8aa6581c048db4a9d62d854bcdf[m
+Merge: d33c0b0 0816161
+Author: akanezilla <sheim6@gatech.edu>
+Date:   Mon Sep 30 22:50:14 2024 -0400
+
+    Merge remote-tracking branch 'origin/main' into akané
+
+[33mcommit d33c0b02334fd55a9e06b86ac8cd41bcbc5ae451[m
+Author: akanezilla <sheim6@gatech.edu>
+Date:   Mon Sep 30 22:26:25 2024 -0400
+
+    changed the links to homepage
+
+[33mcommit 83f9735b8dcc998e2d8298a230156f5edf9a5868[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Mon Sep 30 19:41:41 2024 -0400
+
+    fixed redirection for homepage
+
+[33mcommit 0816161e6d8b33e34fc64099115ba0f9e9c7758f[m[33m ([m[1;31morigin/Temi[m[33m)[m
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Mon Sep 30 19:19:58 2024 -0400
+
+    redirct fix
+
+[33mcommit 92f61f4ad063e88cbd35731dcdff08c86a26fb71[m
+Merge: 49ab981 35f699b
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Mon Sep 30 19:03:55 2024 -0400
+
+    home page fix
+
+[33mcommit 49ab981fb41e8a20499311b2d047defbfb98e32b[m
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Mon Sep 30 18:59:56 2024 -0400
+
+    home page fix
+
+[33mcommit 1843fbf7db46dca639decd3a0a1f373d4835b546[m
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Mon Sep 30 18:59:41 2024 -0400
+
+    home page fix
+
+[33mcommit 35f699bedcfd437686fa9b6a5c6d87c9fd0cae28[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Mon Sep 30 18:57:19 2024 -0400
+
+    Added photos onto randomized suggestions for users + randomized 5 food places
+
+[33mcommit a45f783bb1ea6bd479fc683e152e6620c15a68ae[m[33m ([m[1;31morigin/chirsty[m[33m)[m
+Author: akanezilla <sheim6@gatech.edu>
+Date:   Mon Sep 30 17:37:10 2024 -0400
+
+    finished geolocation user story
+
+[33mcommit 88fba87d44661d72fa314097f7efd8e75ec353e0[m
+Merge: 0a75074 94e6a58
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Mon Sep 30 00:42:21 2024 -0400
+
+    restaurant details & home page fix
+
+[33mcommit 0a750744c04bb78d1ba7576930b93c74a60db268[m
+Author: nli21 <NORAHJADELI@GMAIL.COM>
+Date:   Mon Sep 30 00:29:08 2024 -0400
+
+    restaurant details & home page fix
+
+[33mcommit 94e6a58791b89ff6bd599fadf35e7c1a981a5e41[m[33m ([m[1;31morigin/camtien[m[33m)[m
+Author: Temi Cole <152246695+temicole26@users.noreply.github.com>
+Date:   Sun Sep 29 22:26:34 2024 -0400
+
+    Your commit message
+
+[33mcommit 76ac33477f54e5626a553e3f4ecdd0882732555e[m
+Author: Camtien Nguyen <camtienn153@gmail.com>
+Date:   Sun Sep 29 19:48:56 2024 -0400
+
+    Implemented foundation of 'favorites' user story. This includes the favorites model and migration. Additionally added minor changes to restaurant_details views and url for functionality--subject to change
+
+[33mcommit 0b844ba1711562c56958a97a946efcde9bfec3df[m
+Author: Camtien Nguyen <camtienn153@gmail.com>
+Date:   Sun Sep 29 19:17:13 2024 -0400
+
+    Remove db.sqlite3 from Git tracking
+
+[33mcommit 0a19e3e0de994396fe43e60b238dc214806a50ff[m
+Author: Camtien Nguyen <camtienn153@gmail.com>
+Date:   Sun Sep 29 19:13:07 2024 -0400
+
+    Updated .gitignore file
+
+[33mcommit 96bda2e1b035c4fe6b72b4f1ae3bf28f03a8435a[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Sun Sep 29 17:12:19 2024 -0400
+
+    added css files
+
+[33mcommit 86ab3e0ec0a7f09a6e82e62661cc08e805700819[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Sun Sep 29 17:06:50 2024 -0400
+
+    Finished Restaurant Search App
+
+[33mcommit b374e56e03f4fe93a30504016786c0ab90ace505[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Sun Sep 29 00:47:42 2024 -0400
+
+    christy's first commit
+
+[33mcommit 57558dc518877354e23cbe369a40714754e5e53d[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Sun Sep 29 00:43:56 2024 -0400
+
+    added gitignore (pycache, .env, .idea)
+
+[33mcommit 467f062cbcfb929d684531c7cf1aa6fe0ac0c4b8[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Sun Sep 29 00:34:53 2024 -0400
+
+    Add files via upload
+
+[33mcommit acc8db9d4d253ed77b673178594aa6e139910e81[m
+Author: chritylong0104 <clong96@gatech.edu>
+Date:   Sun Sep 29 00:28:44 2024 -0400
+
+    Initial commit

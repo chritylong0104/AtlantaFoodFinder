@@ -1,10 +1,10 @@
-{% extends 'home.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <h1>Restaurant Search</h1>
 
-<form method="POST">
-    {% csrf_token %}
+<form method="GET" action="{% url 'restaurant_search' %}">
     <input type="text" name="search_query" value="{{ search_query }}" placeholder="Search restaurants...">
     <input type="text" name="cuisine_type" value="{{ cuisine_type }}" placeholder="Cuisine type">
     <input type="number" name="min_rating" value="{{ min_rating }}" min="0" max="5" step="0.1" placeholder="Minimum rating">
@@ -14,20 +14,37 @@
     <button type="submit">Search</button>
 </form>
 
-<div id="map" style="height: 400px; width: 100%;"></div>
+<div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
 
 {% if restaurants %}
     <h2>Search Results</h2>
-    <ul>
-    {% for restaurant in restaurants %}
-        <li>
-            <h3><a href="{% url 'restaurant_detail' restaurant.place_id %}">{{ restaurant.name }}</a></h3>
-            <p>Address: {{ restaurant.address }}</p>
-            <p>Rating: {{ restaurant.rating }}</p>
-            <p>Distance: {{ restaurant.distance }} km</p>
-        </li>
-    {% endfor %}
-    </ul>
+    <div class="restaurant-cards">
+        {% for restaurant in restaurants|slice:":6" %}
+        <div class="card">
+            <a href="{% url 'restaurant_detail' restaurant.place_id %}">
+                {% if restaurant.photos %}
+                    <img src="{{ restaurant.photos }}" alt="{{ restaurant.name }}" class="card-img-top">
+                {% else %}
+                    <img src="{% static 'images/default_restaurant.jpg' %}" alt="{{ restaurant.name }}" class="card-img-top">
+                {% endif %}
+                <div class="card-body">
+                    <h4 class="card-title">{{ restaurant.name }}</h4>
+                    <p class="card-text">Address: {{ restaurant.address }}</p>
+                    <p class="card-text">Rating: {{ restaurant.rating }}</p>
+                    <p class="card-text">Distance: {{ restaurant.distance }} miles</p>
+                    {% if restaurant.cuisine_type %}
+                        <p class="card-text">Cuisine: {{ restaurant.cuisine_type }}</p>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% if restaurants|length > 6 %}
+        <p class="more-results">Showing 6 out of {{ restaurants|length }} results. Refine your search for more specific results.</p>
+    {% endif %}
+{% else %}
+    <p>No results found.</p>
 {% endif %}
 
 <script>
@@ -49,7 +66,7 @@ function initMap() {
 
     {% if restaurants %}
         const bounds = new google.maps.LatLngBounds();
-        {% for restaurant in restaurants %}
+        {% for restaurant in restaurants|slice:":6" %}
         (function() {
             const latLng = new google.maps.LatLng(
                 {{ restaurant.geolocation.lat }},
@@ -68,7 +85,7 @@ function initMap() {
                     <p>Address: {{ restaurant.address }}</p>
                     <p>Cuisine: {{ restaurant.cuisine_type }}</p>
                     <p>Rating: {{ restaurant.rating }}</p>
-                    <p>Distance: {{ restaurant.distance }} km</p>
+                    <p>Distance: {{ restaurant.distance }} miles</p>
                 `;
                 infoWindow.setContent(content);
                 infoWindow.open(map, marker);
@@ -88,4 +105,50 @@ if (navigator.geolocation) {
 }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
+
+<style>
+.restaurant-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.more-results {
+    margin-top: 20px;
+    font-style: italic;
+    color: #666;
+}
+</style>
 {% endblock %}

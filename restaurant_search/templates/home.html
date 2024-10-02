@@ -1,18 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <h1>Welcome to ATL Restaurant Finder</h1>
 
 <!-- Search bar -->
-<form method="post" action="{% url 'restaurant_search' %}">
-    {% csrf_token %}
+<form method="get" action="{% url 'restaurant_search' %}">
     <input type="text" name="search_query" placeholder="Search restaurants">
     <button type="submit">Search</button>
 </form>
 
 <!-- Filter options -->
-<form method="post" action="{% url 'restaurant_search' %}">
-    {% csrf_token %}
+<form method="get" action="{% url 'restaurant_search' %}">
     <input type="text" name="cuisine_type" placeholder="Cuisine type">
     <input type="number" name="min_rating" placeholder="Minimum rating">
     <input type="number" name="max_distance" placeholder="Maximum distance (km)">
@@ -49,18 +48,24 @@
 <!-- Suggested Restaurants -->
 <h2>Suggested Restaurants</h2>
 <div id="map" style="height: 400px; width: 100%;"></div>
-<div class="restaurant-suggestions">
+<div class="restaurant-cards">
     {% for restaurant in suggested_restaurants %}
-    <div class="restaurant-card">
-        <h3>{{ restaurant.name }}</h3>
-        <div class="restaurant-photos">
-            {% for photo_url in restaurant.photos %}
-                <img src="{{ photo_url }}" alt="{{ restaurant.name }}" class="restaurant-photo">
-            {% endfor %}
-        </div>
-        <p>Address: {{ restaurant.address }}</p>
-        <p>Rating: {{ restaurant.rating }}</p>
+    <div class="card">
+        <a href="{% url 'restaurant_detail' restaurant.place_id %}">
+            {% if restaurant.photo %}
+                <img src="{{ restaurant.photo }}" alt="{{ restaurant.name }}" class="card-img-top">
+            {% else %}
+                <img src="{% static 'images/default_restaurant.jpg' %}" alt="{{ restaurant.name }}" class="card-img-top">
+            {% endif %}
+            <div class="card-body">
+                <h4 class="card-title">{{ restaurant.name }}</h4>
+                <p class="card-text">{{ restaurant.address }}</p>
+                <p class="card-text">Rating: {{ restaurant.rating }}</p>
+            </div>
+        </a>
     </div>
+    {% empty %}
+    <p>No restaurants found.</p>
     {% endfor %}
 </div>
 
@@ -108,11 +113,17 @@ function initMap() {
     object-fit: cover;
 }
 
-.restaurant-card {
+.restaurant-card, .card {
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 20px;
     border-radius: 5px;
+}
+
+.restaurant-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
 }
 </style>
 {% endblock %}
