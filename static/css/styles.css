@@ -73,6 +73,26 @@ body {
     margin-left: 20px;
 }
 
+.welcome-section {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 300px; /* Adjust this value as needed */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.welcome-message {
+    text-align: center;
+    font-size: 75px;
+    color: #ffffff; /* White text color */
+    padding: 20px;
+    border-radius: 10px;
+}
+
 .side-bar {
     width: 250px;
     height: calc(100vh - 60px);

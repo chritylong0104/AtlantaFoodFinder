@@ -55,12 +55,13 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
+    <div class="welcome-section" style="background-image: url('{% static 'images/background.jpg' %}');">
         <h1 class="welcome-message">Welcome, {{ user.username }}</h1>
-        <div id="restaurant-cards" class="restaurant-cards">
-            <!-- Cards will be dynamically inserted here -->
-        </div>
-    </main>
-</div>
+    </div>
+    <div id="restaurant-cards" class="restaurant-cards">
+        <!-- Cards will be dynamically inserted here -->
+    </div>
+</main>
     <!-- Bootstrap and jQuery Scripts -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0Nq5+8f2QpntvPbNIy0Txuxr+czr+xpzt/dT1I7+N" crossorigin="anonymous"></script>
