@@ -10,5 +10,7 @@ urlpatterns = [
 
     path('profile/', views.profile, name='profile'),
 
+    path('restaurant/<str:place_id>/', views.restaurant_detail, name='restaurant_detail'),
+
 
 ]

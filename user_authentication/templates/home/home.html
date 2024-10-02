@@ -21,14 +21,14 @@
             <div class="search-bar">
                 <form action="{% url 'restaurant_search' %}" method="GET">
                     <input type="text" name="search_query" placeholder="Search for restaurants...">
-                    <button type="submit">Search</button>
+                    <button type="submit" class="btn btn-search">Search</button>
                 </form>
             </div>
             <div class="nav-icons">
                 <a href="{% url 'map_view' %}" class="map"><i class="fas fa-map-marker-alt"></i></a>
                 <a href="#" class="favorites"><i class="fas fa-heart"></i></a>
                 <a href="{% url 'profile' %}" class="profile"><i class="fas fa-user"></i></a>
-                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-primary custom-logout-btn">Logout</a>
             </div>
         </div>
     </nav>
@@ -51,18 +51,19 @@
         </div>
         <input type="hidden" name="user_lat" id="user_lat">
         <input type="hidden" name="user_lng" id="user_lng">
-        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <button type="submit" class="btn btn-primary custom-apply-btn">Apply Filters</button>
     </form>
 </aside>
 
     <!-- Main Content Area -->
     <main class="main-content">
-        <h1 class="welcome-message">Welcome, {{ user.username }}</h1>
-        <div id="restaurant-cards" class="restaurant-cards">
-            <!-- Cards will be dynamically inserted here -->
-        </div>
-    </main>
-</div>
+    <div class="welcome-section" style="background-image: url('{% static 'images/background.jpg' %}');">
+        <h1 class="welcome-message">Welcome {{ user.username }}</h1>
+    </div>
+    <div id="restaurant-cards" class="restaurant-cards">
+        <!-- Cards will be dynamically inserted here -->
+    </div>
+</main>
     <!-- Bootstrap and jQuery Scripts -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0Nq5+8f2QpntvPbNIy0Txuxr+czr+xpzt/dT1I7+N" crossorigin="anonymous"></script>
@@ -132,6 +133,7 @@ function callback(results, status) {
         selected.forEach(place => {
             const card = document.createElement('div');
             card.className = 'card';
+            card.style.cursor = 'pointer'; // Change cursor to pointer on hover
 
             const img = document.createElement('img');
             img.src = place.photos && place.photos.length > 0 ? place.photos[0].getUrl() : "{% static 'images/default-restaurant.jpg' %}";
@@ -150,6 +152,12 @@ function callback(results, status) {
             card.appendChild(name);
             card.appendChild(rating);
             card.appendChild(address);
+
+            // Add click event listener to the card
+            card.addEventListener('click', function() {
+                // Redirect to the restaurant details page using the named URL
+                window.location.href = "{% url 'restaurant_detail' 0 %}".replace('0', place.place_id);
+            });
 
             cardContainer.appendChild(card);
         });
