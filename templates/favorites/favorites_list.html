@@ -1,18 +1,40 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h2>My Favorite Restaurants</h2>
-<div class="restaurant-cards">
-    {% for favorite in favorites %}
-    <div class="card">
-        <h4>{{ favorite.name }}</h4>
-        <p>Added on: {{ favorite.added_on }}</p>
-        <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}')">
-            <i class="fas fa-heart"></i>
-        </button>
+<!-- Top Navigation Bar -->
+<nav class="top-nav-fav">
+    <!-- ... (navigation bar content remains the same) ... -->
+</nav>
+
+<div class="content-wrapper-fav">
+    <!-- Favorites Title -->
+    <div class="favorites-title">
+        <h1>Favorites</h1>
     </div>
-    {% empty %}
-    <p>You haven't added any favorites yet.</p>
-    {% endfor %}
+
+    <!-- Favorites List -->
+    <div class="favorites-container">
+        {% if favorites %}
+            <div class="restaurant-cards-fav">
+                {% for favorite in favorites %}
+                <div class="restaurant-card-fav">
+                    <img src="{{ favorite.image_url }}" alt="{{ favorite.name }}" class="restaurant-image">
+                    <div class="restaurant-info-fav">
+                        <h3>{{ favorite.name }}</h3>
+                        <p>Rating: {{ favorite.rating }}</p>
+                        <p>{{ favorite.address }}</p>
+                        <p>Added on: {{ favorite.added_on }}</p>
+                        <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}')">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-favorites">You have not added any favorites yet.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
