@@ -51,7 +51,16 @@
         <p><strong>Phone:</strong> {{ place.formatted_phone_number|default:"N/A" }}</p>
         <p><strong>Rating:</strong> {{ place.rating|default:"N/A" }}</p>
     </section>
-
+<button id="favorite-btn" class="btn btn-outline-danger"
+        data-place-id="{{ place.place_id }}"
+        data-name="{{ place.name }}">
+    <i class="far fa-heart"></i> Favorite
+</button>
+<button id="favorite-btn" class="btn btn-outline-danger {% if is_favorite %}active{% endif %}"
+        data-place-id="{{ place.place_id }}"
+        data-name="{{ place.name }}">
+    <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart"></i> Favorite
+</button>
     <section class="reviews">
         <h2>Reviews</h2>
         {% for review in place.reviews %}
@@ -110,5 +119,34 @@
         }
         // Here you would typically send an AJAX request to update the favorite status in the backend
     }
+    $(document).ready(function() {
+    $('#favorite-btn').click(function() {
+        var placeId = $(this).data('place-id');
+        var name = $(this).data('name');
+        $.ajax({
+            url: "{% url 'toggle_favorite' %}",
+            method: 'POST',
+            data: {
+                'place_id': placeId,
+                'name': name,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                var btn = $('#favorite-btn');
+                var icon = btn.find('i');
+                if (response.status === 'added') {
+                    icon.removeClass('far').addClass('fas');
+                    btn.addClass('active');
+                } else if (response.status === 'removed') {
+                    icon.removeClass('fas').addClass('far');
+                    btn.removeClass('active');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error toggling favorite:", error);
+            }
+        });
+    });
+});
 </script>
 {% endblock %}

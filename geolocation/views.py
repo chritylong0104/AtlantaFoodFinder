@@ -3,6 +3,9 @@ from django.conf import settings
 from .models import Restaurant
 from django.db.models import Q
 import requests
+from django.contrib.auth.decorators import login_required
+from favorites.models import Favorite
+from django.http import JsonResponse
 
 
 def map_view(request):
@@ -41,3 +44,22 @@ def restaurant_detail(request, place_id):
         'GOOGLE_MAPS_API_KEY': api_key,
     }
     return render(request, 'restaurant_search/restaurant_detail.html', context)
+@login_required
+def favorites_list(request):
+    favorites = Favorite.objects.filter(user=request.user).order_by('-added_on')
+    return render(request, 'favorites/favorites_list.html', {'favorites': favorites})
+@login_required
+def toggle_favorite(request):
+    if request.method == 'POST':
+        place_id = request.POST.get('place_id')
+        name = request.POST.get('name')
+        favorite, created = Favorite.objects.get_or_create(
+            user=request.user,
+            place_id=place_id,
+            defaults={'name': name}
+        )
+        if not created:
+            favorite.delete()
+            return JsonResponse({'status': 'removed'})
+        return JsonResponse({'status': 'added'})
+    return JsonResponse({'status': 'error'}, status=400)
