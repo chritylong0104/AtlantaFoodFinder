@@ -26,7 +26,7 @@
                 </form>
             </div>
             <div class="nav-icons">
-                <a href="#" class="map"><i class="fas fa-map-marker-alt"></i></a>
+                <a href="{% url 'map_view' %}" class="map"><i class="fas fa-map-marker-alt"></i></a>
                 <a href="#" class="favorites"><i class="fas fa-heart"></i></a>
                 <a href="{% url 'profile' %}" class="profile"><i class="fas fa-user"></i></a>
                 <a href="{% url 'logout' %}" class="btn btn-primary custom-logout-btn">Logout</a>
@@ -90,29 +90,6 @@
             </div>
         </div>
     </div>
-    <h2>My Favorite Restaurants</h2>
-<ul>
-{% for favorite in favorites %}
-    <li>
-        <a href="{% url 'restaurant_detail' favorite.place_id %}">{{ favorite.name }}</a>
-        <small>Added on: {{ favorite.added_on }}</small>
-    </li>
-{% empty %}
-    <li>You haven't added any favorites yet.</li>
-{% endfor %}
-</ul>
-<a href="{% url 'favorite_restaurants' %}">See all favorites</a>
-<h3>Favorite Restaurants</h3>
-<ul>
-{% for favorite in favorites %}
-    <li>
-        {{ favorite.name }} ({{ favorite.place_id }})
-        <small>Added on: {{ favorite.added_on }}</small>
-    </li>
-{% empty %}
-    <li>No favorite restaurants added yet.</li>
-{% endfor %}
-</ul>
     <!-- Optional JavaScript -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk5O8f2QpntvPbNIy0Txuxr+czr+xpzt/dT1I7+N" crossorigin="anonymous"></script>

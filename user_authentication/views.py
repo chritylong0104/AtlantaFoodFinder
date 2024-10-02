@@ -106,6 +106,7 @@ def profile(request):
     return render(request, 'profile/profile.html', {
         'password_form': password_form,
     })
+
 @login_required
 @require_POST
 def toggle_favorite(request):
