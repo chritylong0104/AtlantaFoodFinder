@@ -51,16 +51,7 @@
         <p><strong>Phone:</strong> {{ place.formatted_phone_number|default:"N/A" }}</p>
         <p><strong>Rating:</strong> {{ place.rating|default:"N/A" }}</p>
     </section>
-<button id="favorite-btn" class="btn btn-outline-danger"
-        data-place-id="{{ place.place_id }}"
-        data-name="{{ place.name }}">
-    <i class="far fa-heart"></i> Favorite
-</button>
-<button id="favorite-btn" class="btn btn-outline-danger {% if is_favorite %}active{% endif %}"
-        data-place-id="{{ place.place_id }}"
-        data-name="{{ place.name }}">
-    <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart"></i> Favorite
-</button>
+
     <section class="reviews">
         <h2>Reviews</h2>
         {% for review in place.reviews %}
