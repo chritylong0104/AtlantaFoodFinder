@@ -4,199 +4,218 @@
 {% block title %}{{ place.name }} - Details{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/restaurant_details.css' %}">
+    <link rel="stylesheet" href="{% static 'css/restaurant_details.css' %}">
 {% endblock %}
 
 {% block content %}
-<main class="restaurant-details">
-    <a href="{% url 'map_view' %}" class="back-arrow">
-        <i class="fas fa-arrow-left"></i>
-    </a>
-    <button id="favorite-btn" class="favorite-btn" data-place-id="{{ place.place_id }}" data-name="{{ place.name }}">
-    <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
-</button>
-    <div class="hero-image">
-         {% if place.photos %}
-            <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={{ place.photos.0.photo_reference }}&key={{ GOOGLE_MAPS_API_KEY }}" alt="{{ place.name }}">
-         {% else %}
-            <img src="{% static 'images/default_restaurant.jpg' %}" alt="{{ place.name }}">
-         {% endif %}
-        <div class="hero-text">
-            <h1>{{ place.name }}</h1>
-            <div class="rating">
-                {% for i in "12345"|make_list %}
-                    {% if forloop.counter <= place.rating %}
-                        <i class="fas fa-star"></i>
-                    {% else %}
-                        <i class="far fa-star"></i>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            {% if place.opening_hours %}
-            <div class="hours">
-                <h3>Opening Hours</h3>
-                <ul>
-                {% for day_hours in place.opening_hours.weekday_text %}
-                     <li>{{ day_hours }}</li>
-                {% endfor %}
-                </ul>
-            </div>
+    <main class="restaurant-details">
+        <a href="{% url 'map_view' %}" class="back-arrow">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <button id="favorite-btn" class="favorite-btn"
+                data-place-id="{{ place.place_id }}"
+                data-name="{{ place.name }}"
+                data-image-url="{% if place.photos %}https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={{ place.photos.0.photo_reference }}&key={{ GOOGLE_MAPS_API_KEY }}{% else %}{% static 'images/default_restaurant.jpg' %}{% endif %}"
+                data-rating="{{ place.rating|default:'N/A' }}"
+                data-address="{{ place.formatted_address }}">
+            <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
+        </button>
+        <div class="hero-image">
+            {% if place.photos %}
+                <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={{ place.photos.0.photo_reference }}&key={{ GOOGLE_MAPS_API_KEY }}"
+                     alt="{{ place.name }}">
+            {% else %}
+                <img src="{% static 'images/default_restaurant.jpg' %}" alt="{{ place.name }}">
             {% endif %}
-        </div>
-    </div>
-
-    <section class="restaurant-info">
-        <h2>Restaurant Information</h2>
-        <p><strong>Address:</strong> {{ place.formatted_address }}</p>
-        <p><strong>Phone:</strong> {{ place.formatted_phone_number|default:"N/A" }}</p>
-        <p><strong>Rating:</strong> {{ place.rating|default:"N/A" }}</p>
-    </section>
-
-    <section class="reviews">
-        <h2>Reviews</h2>
-        {% for review in place.reviews %}
-            <div class="review-card">
-                <h3>{{ review.author_name }}</h3>
+            <div class="hero-text">
+                <h1>{{ place.name }}</h1>
                 <div class="rating">
                     {% for i in "12345"|make_list %}
-                        {% if forloop.counter <= review.rating %}
+                        {% if forloop.counter <= place.rating %}
                             <i class="fas fa-star"></i>
                         {% else %}
                             <i class="far fa-star"></i>
                         {% endif %}
                     {% endfor %}
                 </div>
-                <p>{{ review.text }}</p>
-                <p class="review-date">{{ review.relative_time_description }}</p>
+                {% if place.opening_hours %}
+                    <div class="hours">
+                        <h3>Opening Hours</h3>
+                        <ul>
+                            {% for day_hours in place.opening_hours.weekday_text %}
+                                <li>{{ day_hours }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
-        {% empty %}
-            <p>No reviews available.</p>
-        {% endfor %}
-        <button class="btn btn-primary add-review">Post Review</button>
-    </section>
-
-    <section class="location">
-        <h2>Location</h2>
-        <div class="map-container" id="map">
-            <!-- Google Maps will be inserted here -->
         </div>
-    </section>
-</main>
+
+        <section class="restaurant-info">
+            <h2>Restaurant Information</h2>
+            <p><strong>Address:</strong> {{ place.formatted_address }}</p>
+            <p><strong>Phone:</strong> {{ place.formatted_phone_number|default:"N/A" }}</p>
+            <p><strong>Rating:</strong> {{ place.rating|default:"N/A" }}</p>
+        </section>
+
+        <section class="reviews">
+            <h2>Reviews</h2>
+            {% for review in place.reviews %}
+                <div class="review-card">
+                    <h3>{{ review.author_name }}</h3>
+                    <div class="rating">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p>{{ review.text }}</p>
+                    <p class="review-date">{{ review.relative_time_description }}</p>
+                </div>
+                {% empty %}
+                <p>No reviews available.</p>
+            {% endfor %}
+            <button class="btn btn-primary add-review">Post Review</button>
+        </section>
+
+        <section class="location">
+            <h2>Location</h2>
+            <div class="map-container" id="map">
+                <!-- Google Maps will be inserted here -->
+            </div>
+        </section>
+    </main>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
-<script>
-    function initMap() {
-        var restaurant = {lat: {{ place.geometry.location.lat }}, lng: {{ place.geometry.location.lng }}};
-        var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 15,
-            center: restaurant
-        });
-        var marker = new google.maps.Marker({
-            position: restaurant,
-            map: map
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        function toggleFavorite(event) {
-            event.preventDefault();
-            const btn = event.currentTarget;
-            const placeId = btn.dataset.placeId;
-            const name = btn.dataset.name;
-            const icon = btn.querySelector('i');
-
-            $.ajax({
-                url: "{% url 'toggle_favorite' %}",
-                method: 'POST',
-                data: {
-                    'place_id': placeId,
-                    'name': name,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    if (response.status === 'added') {
-                        icon.classList.remove('far');
-                        icon.classList.add('fas');
-                    } else if (response.status === 'removed') {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error toggling favorite:", error);
-                }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async
+            defer></script>
+    <script>
+        function initMap() {
+            var restaurant = {lat: {{ place.geometry.location.lat }}, lng: {{ place.geometry.location.lng }}};
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: restaurant
+            });
+            var marker = new google.maps.Marker({
+                position: restaurant,
+                map: map
             });
         }
 
-        // Add event listener to the favorite button
-        const favoriteBtn = document.getElementById('favorite-btn');
-        if (favoriteBtn) {
-            favoriteBtn.addEventListener('click', toggleFavorite);
-        }
+        // Add this to your JavaScript file or within a <script> tag in restaurant_detail.html
+
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteBtn = document.getElementById('favorite-btn');
+
+    favoriteBtn.addEventListener('click', function(event) {
+        event.preventDefault();
+        const icon = this.querySelector('i');
+        const placeId = this.dataset.placeId;
+        const name = this.dataset.name;
+        const imageUrl = this.dataset.imageUrl;
+        const rating = this.dataset.rating;
+        const address = this.dataset.address;
+
+        $.ajax({
+            url: "{% url 'toggle_favorite' %}",
+            method: 'POST',
+            data: {
+                'place_id': placeId,
+                'name': name,
+                'image_url': imageUrl,
+                'rating': rating,
+                'address': address,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'added') {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    localStorage.setItem(`favorite-${placeId}`, 'true');
+                } else if (response.status === 'removed') {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    localStorage.removeItem(`favorite-${placeId}`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error toggling favorite:", error);
+            }
+        });
     });
-</script>
+
+    // Check localStorage on page load
+    const placeId = favoriteBtn.dataset.placeId;
+    if (localStorage.getItem(`favorite-${placeId}`) === 'true') {
+        favoriteBtn.querySelector('i').classList.remove('far');
+        favoriteBtn.querySelector('i').classList.add('fas');
+    }
+});
+    </script>
 {% endblock %}
 function callback(results, status) {
-    if (status == google.maps.places.PlacesServiceStatus.OK) {
-        const cardContainer = document.getElementById('restaurant-cards');
-        cardContainer.innerHTML = ''; // Clear existing cards
+if (status == google.maps.places.PlacesServiceStatus.OK) {
+const cardContainer = document.getElementById('restaurant-cards');
+cardContainer.innerHTML = ''; // Clear existing cards
 
-        const shuffled = results.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 6);
+const shuffled = results.sort(() => 0.5 - Math.random());
+const selected = shuffled.slice(0, 6);
 
-        selected.forEach(place => {
-            const card = createRestaurantCard(place);
-            cardContainer.appendChild(card);
-        });
+selected.forEach(place => {
+const card = createRestaurantCard(place);
+cardContainer.appendChild(card);
+});
 
-        // Add event listeners to all favorite buttons
-        document.querySelectorAll('.favorite-btn').forEach(btn => {
-            btn.addEventListener('click', toggleFavorite);
-        });
-    } else {
-        console.error('Google Places API request failed. Status:', status);
-        document.getElementById('restaurant-cards').innerHTML = '<p>Failed to load restaurants. Please try again later.</p>';
-    }
+// Add event listeners to all favorite buttons
+document.querySelectorAll('.favorite-btn').forEach(btn => {
+btn.addEventListener('click', toggleFavorite);
+});
+} else {
+console.error('Google Places API request failed. Status:', status);
+document.getElementById('restaurant-cards').innerHTML = '<p>Failed to load restaurants. Please try again later.</p>';
+}
 }
 document.getElementById('favorite-btn').addEventListener('click', toggleFavorite);
-    document.addEventListener('DOMContentLoaded', function() {
-        function toggleFavorite(event) {
-            event.preventDefault();
-            const btn = event.currentTarget;
-            const placeId = btn.dataset.placeId;
-            const name = btn.dataset.name;
-            const icon = btn.querySelector('i');
+document.addEventListener('DOMContentLoaded', function() {
+function toggleFavorite(event) {
+event.preventDefault();
+const btn = event.currentTarget;
+const placeId = btn.dataset.placeId;
+const name = btn.dataset.name;
+const icon = btn.querySelector('i');
 
-            $.ajax({
-                url: "{% url 'toggle_favorite' %}",
-                method: 'POST',
-                data: {
-                    'place_id': placeId,
-                    'name': name,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    if (response.status === 'added') {
-                        icon.classList.remove('far');
-                        icon.classList.add('fas');
-                    } else if (response.status === 'removed') {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error toggling favorite:", error);
-                }
-            });
-        }
+$.ajax({
+url: "{% url 'toggle_favorite' %}",
+method: 'POST',
+data: {
+'place_id': placeId,
+'name': name,
+'csrfmiddlewaretoken': '{{ csrf_token }}'
+},
+success: function(response) {
+if (response.status === 'added') {
+icon.classList.remove('far');
+icon.classList.add('fas');
+} else if (response.status === 'removed') {
+icon.classList.remove('fas');
+icon.classList.add('far');
+}
+},
+error: function(xhr, status, error) {
+console.error("Error toggling favorite:", error);
+}
+});
+}
 
-        // Add event listener to the favorite button
-        const favoriteBtn = document.getElementById('favorite-btn');
-        if (favoriteBtn) {
-            favoriteBtn.addEventListener('click', toggleFavorite);
-        }
-    });
+// Add event listener to the favorite button
+const favoriteBtn = document.getElementById('favorite-btn');
+if (favoriteBtn) {
+favoriteBtn.addEventListener('click', toggleFavorite);
+}
+});
 </script>

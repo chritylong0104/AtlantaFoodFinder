@@ -4,10 +4,13 @@
 <h2>My Favorite Restaurants</h2>
 <div class="restaurant-cards">
     {% for favorite in favorites %}
-    <div class="card">
+    <div class="card" id="favorite-{{ favorite.place_id }}">
+        <img src="{{ favorite.image_url }}" alt="{{ favorite.name }}" class="restaurant-image">
         <h4>{{ favorite.name }}</h4>
+        <p>Rating: {{ favorite.rating }}</p>
+        <p>{{ favorite.address }}</p>
         <p>Added on: {{ favorite.added_on|date:"F d, Y" }}</p>
-        <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}')">
+        <button class="favorite-btn" onclick="toggleFavorite(event, '{{ favorite.place_id }}', '{{ favorite.name }}', '{{ favorite.image_url }}', '{{ favorite.rating }}', '{{ favorite.address }}')">
             <i class="fas fa-heart"></i>
         </button>
     </div>
@@ -56,7 +59,7 @@ h2 {
 </style>
 
 <script>
-function toggleFavorite(event, placeId, name) {
+function toggleFavorite(event, placeId, name, imageUrl, rating, address) {
     event.preventDefault();
     const btn = event.currentTarget;
     const card = btn.closest('.card');
@@ -67,6 +70,9 @@ function toggleFavorite(event, placeId, name) {
         data: {
             'place_id': placeId,
             'name': name,
+            'image_url': imageUrl,
+            'rating': rating,
+            'address': address,
             'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(response) {

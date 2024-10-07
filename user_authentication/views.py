@@ -112,10 +112,17 @@ def profile(request):
 def toggle_favorite(request):
     place_id = request.POST.get('place_id')
     name = request.POST.get('name')
+    image_url = request.POST.get('image_url')
+    rating = request.POST.get('rating')
+    address = request.POST.get('address')
     favorite, created = Favorite.objects.get_or_create(
         user=request.user,
         place_id=place_id,
-        defaults={'name': name}
+        defaults={'name': name,
+                  'image_url': image_url,
+                  'rating': rating,
+                  'address': address
+                  }
     )
     if not created:
         favorite.delete()
