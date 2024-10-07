@@ -9,6 +9,6 @@ urlpatterns = [
     path('restaurant-search/', include('restaurant_search.urls')),
     path('geolocation/', include('geolocation.urls')),
     path('restaurant/<str:place_id>/', views.restaurant_detail, name='restaurant_detail'),
-    #path('favorites/', views.favorites_list, name='favorites_list'),
+    path('favorites/', include('favorites.urls')),
 
 ]

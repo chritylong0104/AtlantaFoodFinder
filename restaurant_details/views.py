@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 import googlemaps
 from django.http import Http404
+from favorites.models import Favorite
 
 
 def home_view(request):
@@ -64,17 +65,17 @@ def restaurant_detail(request, place_id):
 
     except Exception as e:
         raise Http404(f"Restaurant with place_id {place_id} not found")
+
     is_favorite = False
     if request.user.is_authenticated:
         is_favorite = Favorite.objects.filter(user=request.user, place_id=place_id).exists()
 
     context = {
         'place': place_details,
-        'GOOGLE_MAPS_API_KEY': api_key,
         'is_favorite': is_favorite,
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
     }
-    return render(request, 'restaurant_search/restaurant_detail.html', context)
-
+    return render(request, 'restaurant_detail.html', context)
 def restaurant_list(request):
     # This function is left as a placeholder.
     # You might want to implement this if you need a list view of restaurants.
