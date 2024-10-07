@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>My Favorite Restaurants</h2>
+<div class="restaurant-cards">
+    {% for favorite in favorites %}
+    <div class="card" id="favorite-{{ favorite.id }}">
+        <h4>{{ favorite.name }}</h4>
+        <p>Added on: {{ favorite.added_on }}</p>
+        <button class="favorite-btn" data-place-id="{{ favorite.place_id }}" data-name="{{ favorite.name }}">
+            <i class="fas fa-heart"></i>
+        </button>
+    </div>
+    {% empty %}
+    <p>You haven't added any favorites yet.</p>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function toggleFavorite(event) {
+        event.preventDefault();
+        const btn = event.currentTarget;
+        const placeId = btn.dataset.placeId;
+        const name = btn.dataset.name;
+        const icon = btn.querySelector('i');
+
+        $.ajax({
+            url: "{% url 'toggle_favorite' %}",
+            method: 'POST',
+            data: {
+                'place_id': placeId,
+                'name': name,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'removed') {
+                    btn.closest('.card').remove();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error toggling favorite:", error);
+            }
+        });
+    }
+
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', toggleFavorite);
+    });
+});
+</script>
+{% endblock %}
