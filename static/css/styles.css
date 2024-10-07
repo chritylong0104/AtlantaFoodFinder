@@ -378,8 +378,6 @@ body {
     margin-top: 20px;
 }
 
-/* ... (rest of the CSS remains the same) ... */
-
 .restaurant-cards-fav {
     display: flex;
     flex-wrap: wrap;

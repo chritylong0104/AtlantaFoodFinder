@@ -124,8 +124,8 @@
     }
 
     function redirectToFavorites(event) {
-        event.stopPropagation();
-        window.location.href = "{% url 'favorites_list' %}";
+       event.stopPropagation();
+       window.location.href = "{% url 'favorites_list' %}";
     }
 
     function callback(results, status) {
@@ -154,16 +154,12 @@
                 const address = document.createElement('p');
                 address.textContent = place.vicinity || 'Address not available';
 
-                const favoriteBtn = document.createElement('button');
-                favoriteBtn.className = 'favorite-btn';
-                favoriteBtn.innerHTML = '<i class="far fa-heart"></i>';
-                favoriteBtn.onclick = redirectToFavorites;
+
 
                 card.appendChild(img);
                 card.appendChild(name);
                 card.appendChild(rating);
                 card.appendChild(address);
-                card.appendChild(favoriteBtn);
 
                 // Add click event listener to the card
                 card.addEventListener('click', function() {
